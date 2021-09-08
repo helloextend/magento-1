@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <extend translate="label" module="warranty">
+            <label>Extend</label>
+            <sort_order>10</sort_order>
+        </extend>
+    </tabs>
+    <sections>
+        <warranty translate="label" module="warranty">
+            <label>Extend Protection Plans</label>
+            <tab>extend</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>10</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <extend_info>
+                    <label><![CDATA[Extend Protection Plans]]></label>
+                    <frontend_type>text</frontend_type>
+                    <frontend_model>warranty/system_config_intro</frontend_model>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <sort_order>10</sort_order>
+                    <expanded>1</expanded>
+                </extend_info>
+                <authentication>
+                    <label><![CDATA[Authentication]]></label>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <sort_order>20</sort_order>
+                    <comment><![CDATA[In order for the Extend extension to communicate with the Extend platform on your stores's
+                        behalf (to sync products, create protection plan SKUs, display optimized plan offers in your store, and
+                        record extended service contract sales), we need you to store a couple of unique identifiers here in your
+                        configuration settings.]]>
+                    </comment>
+                    <fields>
+                        <auth_mode translate="label">
+                            <label>Mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>warranty/config_source_authmode</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </auth_mode>
+                        <store_id translate="label">
+                            <label>Store ID</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>
+                                <![CDATA[Unique identifier for your store on the Extend platform.
+                                Go to <a href="https://merchants.extend.com">your Extend merchant dashboard</a>
+                                to find your StoreID and then paste of type it here.]]>
+                            </comment>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </store_id>
+                        <api_key translate="label">
+                            <label>API Key</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>
+                                <![CDATA[Access token which is required for all API communications between your Magento store and
+                                the Extend platform. You can view and manage your API Key on
+                                <a href="https://merchants.extend.com">your Extend merchant dashboard</a>.]]>
+                            </comment>
+                            <sort_order>30</sort_order>
+                            <frontend_type>password</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </api_key>
+                        <sandbox_store_id translate="label">
+                            <label>SandBox Store ID</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>
+                                <![CDATA[Unique identifier for your store on the Extend platform.
+                                Go to <a href="https://demo.merchants.extend.com">your Extend merchant dashboard</a>
+                                to find your StoreID and then paste of type it here.]]>
+                            </comment>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sandbox_store_id>
+                        <sandbox_api_key translate="label">
+                            <label>SandBox API Key</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>
+                                <![CDATA[Access token which is required for all API communications between your Magento store and
+                                the Extend platform. You can view and manage your API Key on
+                                <a href="https://demo.merchants.extend.com">your Extend merchant dashboard</a>.]]>
+                            </comment>
+                            <sort_order>50</sort_order>
+                            <frontend_type>password</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sandbox_api_key>
+                    </fields>
+                </authentication>
+                <products>
+                    <label><![CDATA[Sync Products]]></label>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <sort_order>30</sort_order>
+                    <comment>
+                        <![CDATA[It's important to keep your product catalog synced with Extend, so we can serve accurate
+                        extended protection plan offers in your store. Just click the "Sync Products" button and we'll send your
+                        catalog to the Extend platform in batches. If you have a small number of SKUs this will take just
+                        seconds, but if your catalog is very large it could take few minutes.]]>
+                    </comment>
+                    <fields>
+                        <batch_size translate="label">
+                            <label>Batch Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>warranty/config_source_batchsize</source_model>
+                            <comment>
+                                <![CDATA[Save the configuration and flush the cache before running the sync process.]]>
+                            </comment>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </batch_size>
+                        <syncbutton>
+                            <label><![CDATA[Sync Products]]></label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>warranty/system_config_products_button</frontend_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>20</sort_order>
+                        </syncbutton>
+                    </fields>
+                </products>
+                <enableExtend>
+                    <label><![CDATA[Enable Extend]]></label>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <sort_order>40</sort_order>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enable translate="label">
+                            <label>Enable Extend</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <frontend_class>complex</frontend_class>
+                            <comment>
+                                <![CDATA[To enable or disable protection plan offers on specific products,
+                                please go to <a href="https://merchants.extend.com">your Extend merchant dashboard</a>.]]>
+                            </comment>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enable>
+                        <enableBalance translate="label">
+                            <label>Balanced Cart</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enableBalance>
+                        <enableCartOffers translate="label">
+                            <label>Display Cart Offers</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enableCartOffers>
+                        <enableRefunds translate="label">
+                            <label>Enable Refunds</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enableRefunds>
+                    </fields>
+                </enableExtend>
+                <advance_config>
+                    <label><![CDATA[Advanced Configuration]]></label>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <sort_order>50</sort_order>
+                    <comment>
+                        <![CDATA[There are a number of other configurations you can control through your Extend merchant dashboard,
+                                including: enabling / disabling Extend offers (for your whole store or for individual products),
+                                customizing your offer branding, viewing the status of protection plan matching for
+                                your products, and more!]]>
+                    </comment>
+                    <fields>
+                        <portalbutton>
+                            <label><![CDATA[Sync Products]]></label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>warranty/system_config_portallink</frontend_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>20</sort_order>
+                        </portalbutton>
+                    </fields>
+                </advance_config>
+            </groups>
+        </warranty>
+    </sections>
+</config>

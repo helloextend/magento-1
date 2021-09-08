@@ -1,0 +1,117 @@
+<?php if ($this->isExtendEnabled()): ?>
+    <?php $_product = $this->getProduct(); ?>
+    <?php $childProduct = $this->getChildProductsSku(); ?>
+    <div id="extend-offer"></div>
+    <script>
+        Extend.config(<?php echo $this->getJsonConfig()?>);
+        Extend.buttons.render('#extend-offer', {
+            referenceId: '<?php echo $_product->getSku()?>'
+        });
+
+        <?php if($childProduct):?>
+            $j(document).ready(function () {
+                let target = document.querySelector("span[id^='product-price-'] .price");
+                let config = {attributes: true, childList: true, characterData: true};
+                let products = <?php echo $this->getChildProductsSku()?>;
+                let observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        let productId = getSimpleProductId();
+                        if (productId) {
+                            renderWarranties(products[productId]);
+                            if(!$j('#product-sku').length){
+                                $j('<input />').attr('type', 'hidden')
+                                    .attr('id', 'product-sku')
+                                    .attr('value', products[productId])
+                                    .appendTo('#product_addtocart_form');
+                            }else{
+                                $j('#product-sku').val(products[productId])
+                            }
+                        }
+                    });
+                });
+                observer.observe(target, config);
+            });
+
+            function getSimpleProductId() {
+                var productCandidates = [];
+                jQuery.each(spConfig.settings, function (selectIndex, select) {
+                    var attributeId = select.id.replace('attribute', '');
+                    var selectedValue = select.options[select.selectedIndex].value;
+                    jQuery.each(spConfig.config.attributes[attributeId].options, function (optionIndex, option) {
+                        if (option.id == selectedValue) {
+                            var optionProducts = option.products;
+                            if (productCandidates.length == 0) {
+                                productCandidates = optionProducts;
+                            } else {
+                                var productIntersection = [];
+                                jQuery.each(optionProducts, function (productIndex, productId) {
+                                    if (productCandidates.indexOf(productId) > -1) {
+                                        productIntersection.push(productId);
+                                    }
+                                });
+                                productCandidates = productIntersection;
+                            }
+                        }
+                    });
+                });
+                return (productCandidates.length == 1) ? productCandidates[0] : null;
+            }
+        <?php endif;?>
+
+        function renderWarranties(productSku) {
+            const component = Extend.buttons.instance('#extend-offer');
+            component.setActiveProduct(productSku);
+        }
+
+        var myForm= new VarienForm('product_addtocart_form', true);
+        $j(document).ready(function () {
+            let buttonText = $j('.add-to-cart-buttons span span').text()
+            $j('.add-to-cart-buttons .button.btn-cart').remove();
+            $j('.add-to-cart-buttons').html('<button type="button" title="' + buttonText + '" class="button btn-cart"><span><span>' + buttonText + '</span></span></button>');
+            $j('.add-to-cart-buttons .button.btn-cart').click(function (event) {
+                /** get the component instance rendered previously */
+                const component = Extend.buttons.instance('#extend-offer');
+                /** get the users plan selection */
+                const plan = component.getPlanSelection();
+
+                let productSku = $j("#product-sku").val();
+                let sku = productSku ? productSku : '<?php echo $_product->getSku()?>';
+
+                if (plan) {
+                    addWarranty(plan, sku);
+                    if(myForm.validator.validate()){
+                        $j('#product_addtocart_form').submit();
+                    };
+                } else {
+                    Extend.modal.open({
+                        referenceId: sku,
+                        onClose: function (plan) {
+                            if (plan) {
+                                addWarranty(plan, sku)
+                            } else {
+                               $j("input[name^='warranty']").remove();
+                            }
+                            if(myForm.validator.validate()){
+                                $j('#product_addtocart_form').submit();
+                            };
+                        }
+                    });
+                }
+            });
+        });
+
+        function addWarranty(plan, sku) {
+            $j.each(plan, (attribute, value) => {
+                $j('<input />').attr('type', 'hidden')
+                    .attr('name', 'warranty[' + attribute + ']')
+                    .attr('value', value)
+                    .appendTo('#product_addtocart_form');
+            });
+
+            $j('<input />').attr('type', 'hidden')
+                .attr('name', 'warranty[product]')
+                .attr('value', sku)
+                .appendTo('#product_addtocart_form');
+        }
+    </script>
+<?php endif; ?>

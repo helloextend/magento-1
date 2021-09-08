@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <name>css/warranty/custom_admin.css</name>
+            </action>
+            <action method="addItem">
+                <type>js</type>
+                <script>lib/jquery/jquery-1.12.1.js</script>
+            </action>
+            <action method="addItem">
+                <type>js</type>
+                <script>lib/jquery/noconflict.js</script>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <script>js/warranty/custom_admin.js</script>
+            </action>
+        </reference>
+    </default>
+</layout>

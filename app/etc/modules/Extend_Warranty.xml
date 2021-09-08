@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Extend_Warranty>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Extend_Warranty>
+        <depends>
+            <Mage_Catalog />
+        </depends>
+    </modules>
+</config>
