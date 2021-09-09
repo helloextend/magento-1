@@ -26,9 +26,8 @@ class Extend_Warranty_Model_Observer_Warranty_Removewarranties
             if ($removeWarranty) {
                 foreach ($items as $item) {
                     if ($item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE
-                        //&& $item->getOptionByCode('associated_product')->getValue() === $sku
+                        && $item->getOptionByCode('associated_product')->getValue() === $sku
                     ) {
-
                         $quote->removeItem($item->getItemId());
                     }
                 }

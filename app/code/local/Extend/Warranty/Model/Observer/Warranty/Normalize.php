@@ -7,7 +7,8 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
      */
     public function execute(Varien_Event_Observer $observer)
     {
-        if (!$this->helper->isBalancedCart()) {
+        $connectorHelper = Mage::helper('warranty/connector');
+        if (!$connectorHelper->isBalancedCart()) {
             return;
         }
 
@@ -15,21 +16,20 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
 
         /* Normalize on quote/cart update */
         if (empty($_cart)) {
-            $this->_normalize($this->checkoutSession->getQuote());
+            $this->_normalize(Mage::getSingleton('checkout/session')->getQuote());
         } else {
-            $this->normalizer->normalize($_cart);
+            Mage::getModel('warranty/normalizer')->normalize($_cart);
         }
     }
 
     private function _normalize($quote)
     {
-
         //split cart items from products and warranties
         $warranties = [];
         $products = [];
 
         foreach ($quote->getAllItems() as $item) {
-            if ($item->getProductType() === 'warranty') {
+            if ($item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE) {
                 $warranties[$item->getItemId()] = $item;
             } else {
                 $products[] = $item;
@@ -39,18 +39,18 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
         //Loop products to see if their qty is different from the warranty qty and adjust both to max
         foreach ($products as $item) {
             $sku = $item->getSku();
-
+            $itemQty = $item->getQty();
             foreach ($warranties as $warrantyitem) {
-                if ($warrantyitem->getOptionByCode('associated_product')->getValue() == $sku &&
-                    ($item->getProductType() == 'configurable' || is_null($item->getOptionByCode('parent_product_id')))) {
-                    if ($warrantyitem->getQty() <> $item->getQty()) {
-                        if ($item->getQty() > 0) {
-                            //Update Warranty QTY
-                            $warrantyitem->setQty($item->getQty());
-                            $warrantyitem->calcRowTotal();
-                            $warrantyitem->save();
-                        }
-                    }
+                if (
+                    $itemQty > 0
+                    && ($warrantyitem->getQty() !== $itemQty)
+                    && $warrantyitem->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $sku
+                    && ($item->getProductType() == 'configurable' || is_null($item->getOptionByCode('parent_product_id')))
+                ) {
+                    //Update Warranty QTY
+                    $warrantyitem->setQty($item->getQty());
+                    $warrantyitem->calcRowTotal();
+                    $warrantyitem->save();
                 }
             }
         }

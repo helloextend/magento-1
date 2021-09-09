@@ -12,6 +12,9 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     const XML_PATH_SANDBOX_API_KEY = 'warranty/authentication/sandbox_api_key';
     const XML_PATH_SANDBOX_STORE_ID = 'warranty/authentication/sandbox_store_id';
     const XML_PATH_ENABLE_EXTEND = 'warranty/enableExtend/enable';
+    const XML_PATH_ENABLE_BALANCE = 'warranty/enableExtend/enableBalance';
+    const XML_PATH_ENABLE_CARTOFFERS = 'warranty/enableExtend/enableCartOffers';
+    const XML_PATH_ENABLE_REFUNDS = 'warranty/enableExtend/enableRefunds';
 
     /**
      * @var Mage_Core_Model_Store
@@ -121,9 +124,39 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
 
     /**
      * @return bool
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function isExtendEnabled()
     {
-        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_EXTEND);
+        $store = $this->getStore();
+        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_EXTEND, $store);
+    }
+
+    /**
+     * @return bool
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isBalancedCart()
+    {
+        $store = $this->getStore();
+        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_BALANCE, $store);
+    }
+
+    /**
+     * @return bool
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isDisplayOffersEnabled() {
+        $store = $this->getStore();
+        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_CARTOFFERS, $store);
+    }
+
+    /**
+     * @return bool
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isRefundEnabled() {
+        $store = $this->getStore();
+        return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_REFUNDS, $store);
     }
 }
