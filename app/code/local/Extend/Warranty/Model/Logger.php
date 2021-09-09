@@ -25,7 +25,7 @@ class Extend_Warranty_Model_Logger
                 self::INFO_LOG_FILE,
                 true
             );
-        } elseif(!$prefix && $data) {
+        } elseif (!$prefix && $data) {
             Mage::log($data, Zend_Log::INFO, self::INFO_LOG_FILE, true);
         }
     }
@@ -48,7 +48,7 @@ class Extend_Warranty_Model_Logger
                 Zend_Log::ERR,
                 self::ERR_LOG_FILE,
                 true);
-        } elseif(!$prefix && $data) {
+        } elseif (!$prefix && $data) {
             Mage::log($data, Zend_Log::ERR, self::ERR_LOG_FILE, true);
         }
     }
@@ -72,7 +72,7 @@ class Extend_Warranty_Model_Logger
                 self::CRIT_LOG_FILE,
                 true
             );
-        } elseif(!$prefix && $data) {
+        } elseif (!$prefix && $data) {
             Mage::log($data, Zend_Log::CRIT, self:: CRIT_LOG_FILE, true);
         }
     }

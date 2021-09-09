@@ -19,6 +19,10 @@ class Extend_Warranty_Model_Api_Connector
      */
     protected $_store;
 
+    /**
+     * @return mixed
+     * @throws Zend_Http_Client_Exception
+     */
     public function testConnection()
     {
         $response = $this->call(Extend_Warranty_Model_Api_Sync_Products_Handler::ENDPOINT_URI);
@@ -53,7 +57,7 @@ class Extend_Warranty_Model_Api_Connector
                 );
         }
 
-        if(!$data){
+        if (!$data) {
             $data = 'Request Body is Empty';
         }
 

@@ -4,12 +4,20 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
 {
     const ENDPOINT_URI = 'contracts';
 
-    public function create($contract): string
+    /**
+     * @param $contract
+     * @return string
+     */
+    public function create($contract)
     {
         return $this->createRequest($contract);
     }
 
-    private function createRequest($contract): string
+    /**
+     * @param $contract
+     * @return string
+     */
+    private function createRequest($contract)
     {
         try {
             $response = $this->connector
@@ -27,7 +35,11 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
         }
     }
 
-    private function processCreateResponse(\Zend_Http_Response $response): string
+    /**
+     * @param Zend_Http_Response $response
+     * @return string
+     */
+    private function processCreateResponse(\Zend_Http_Response $response)
     {
         if ($response->isError()) {
             $res = $this->jsonSerializer->unserialize($response->getBody());
@@ -44,12 +56,20 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
     }
 
 
-    public function refund($contractId): bool
+    /**
+     * @param $contractId
+     * @return bool
+     */
+    public function refund($contractId)
     {
         return $this->refundRequest($contractId);
     }
 
-    private function refundRequest($contractId): bool
+    /**
+     * @param $contractId
+     * @return bool
+     */
+    private function refundRequest($contractId)
     {
         try {
             $endpoint = self::ENDPOINT_URI . "/{$contractId}/refund";
@@ -68,7 +88,11 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
         }
     }
 
-    private function processRefundResponse(\Zend_Http_Response $response): bool
+    /**
+     * @param Zend_Http_Response $response
+     * @return bool
+     */
+    private function processRefundResponse(\Zend_Http_Response $response)
     {
         if ($response->getStatus() === 201 || $response->getStatus() === 202) {
             $this->logger->info('Refund Request Success');
@@ -82,7 +106,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
                 $this->logger->info('Refund Request already processed');
                 return true;
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['exception' => $e]);
             return false;
         }
@@ -92,6 +116,19 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
         return false;
     }
 
+    /**
+     * @param $contractId
+     * @return false|mixed
+     */
+    public function validateRefund($contractId)
+    {
+        return $this->validateRefundRequest($contractId);
+    }
+
+    /**
+     * @param $contractId
+     * @return false|mixed
+     */
     private function validateRefundRequest($contractId)
     {
         try {
@@ -115,10 +152,5 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
             $this->logger->error($e->getMessage(), ['exception' => $e]);
             return false;
         }
-    }
-
-    public function validateRefund($contractId)
-    {
-        return $this->validateRefundRequest($contractId);
     }
 }

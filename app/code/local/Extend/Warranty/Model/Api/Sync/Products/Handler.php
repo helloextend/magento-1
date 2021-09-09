@@ -11,11 +11,11 @@ class Extend_Warranty_Model_Api_Sync_Products_Handler
      */
     public function sync($productsCollection, $currentBatch)
     {
-
         $data = [];
         foreach ($productsCollection as $product) {
             $data[] = Mage::getModel('warranty/api_databuilder_product')->build($product);
         }
+
         try {
             $response = Mage::getModel('warranty/api_connector')->call(
                 self::ENDPOINT_URI . '?batch=1&upsert=1',
@@ -30,7 +30,7 @@ class Extend_Warranty_Model_Api_Sync_Products_Handler
                 $syncedData[$name] = $info;
             }
             Mage::getModel('warranty/logger')->info($syncedData, '', 'Synced Data');
-        } catch (Zend_Http_Client_Exception $e){
+        } catch (Zend_Http_Client_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (Exception $e) {
             Mage::getModel('warranty/logger')->critical($e->getMessage());

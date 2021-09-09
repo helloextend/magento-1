@@ -7,7 +7,7 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
      */
     public function execute(Varien_Event_Observer $observer)
     {
-        if(!$this->helper->isBalancedCart()){
+        if (!$this->helper->isBalancedCart()) {
             return;
         }
 
@@ -21,7 +21,8 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
         }
     }
 
-    private function _normalize($quote) {
+    private function _normalize($quote)
+    {
 
         //split cart items from products and warranties
         $warranties = [];

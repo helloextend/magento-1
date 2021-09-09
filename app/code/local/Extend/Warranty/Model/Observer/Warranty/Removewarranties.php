@@ -3,7 +3,7 @@
 class Extend_Warranty_Model_Observer_Warranty_Removewarranties
 {
     /**
-     * @param Observer $observer
+     * @param Varien_Event_Observer $observer
      * @return void
      */
     public function execute(Varien_Event_Observer $observer)

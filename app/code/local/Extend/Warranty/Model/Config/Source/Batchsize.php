@@ -6,6 +6,9 @@ class Extend_Warranty_Model_Config_Source_Batchsize
     const VALUE_50 = 50;
     const VALUE_100 = 100;
 
+    /**
+     * @return array[]
+     */
     public function toOptionArray()
     {
         return array(

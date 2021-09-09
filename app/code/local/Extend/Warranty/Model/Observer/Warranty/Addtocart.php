@@ -3,7 +3,7 @@
 class Extend_Warranty_Model_Observer_Warranty_Addtocart
 {
     /**
-     * @param Observer $observer
+     * @param Varien_Event_Observer $observer
      * @return void
      */
     public function execute(Varien_Event_Observer $observer)
@@ -26,14 +26,13 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
             }
             $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
             $warrantyData['qty'] = $qty;
-            $warrantyData['product'] = $warranty->getId();
 
             try {
                 $cart->addProduct($warranty, $warrantyData);
                 $item = $cart->getQuote()->getItemByProduct($warranty);
-                $item->setCustomPrice($price); // or some other value
-                $item->setOriginalCustomPrice($price); // or some other value
-                $item->getProduct()->setIsSuperMode(true); // this is crucial
+                $item->setCustomPrice($price);
+                $item->setOriginalCustomPrice($price);
+                $item->getProduct()->setIsSuperMode(true);
                 $cart->getQuote()->removeAllAddresses();
                 $cart->save();
                 $quote = Mage::getModel('checkout/session')->getQuote();

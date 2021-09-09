@@ -10,11 +10,11 @@ class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function formatPrice($price)
     {
-        if  (empty($price)) {
+        if (empty($price)) {
             return 0;
         }
 
-        $floatPrice = (float) $price;
+        $floatPrice = (float)$price;
         $formattedPrice = number_format(
             $floatPrice,
             2,
@@ -22,7 +22,7 @@ class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
             ''
         );
 
-        return (float) $formattedPrice;
+        return (float)$formattedPrice;
     }
 
     /**
@@ -39,6 +39,6 @@ class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
             0
         );
 
-        return (float) $price;
+        return (float)$price;
     }
 }

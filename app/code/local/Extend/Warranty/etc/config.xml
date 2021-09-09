@@ -40,6 +40,11 @@
             <warranty>
                 <class>Extend_Warranty_Helper</class>
             </warranty>
+            <catalog>
+                <rewrite>
+                    <product_configuration>Extend_Warranty_Helper_Product_Configuration</product_configuration>
+                </rewrite>
+            </catalog>
         </helpers>
         <catalog>
             <product>

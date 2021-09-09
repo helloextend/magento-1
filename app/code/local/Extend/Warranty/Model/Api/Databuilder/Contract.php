@@ -28,57 +28,59 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
             }
 
             $billing = $order->getBillingAddress();
+
             $shipping = $order->getShippingAddress();
 
+
             $contracts[$key] = [
-                'transactionId' => $order->getIncrementId(),
+                'transactionId'    => $order->getIncrementId(),
                 'transactionTotal' => [
                     "currencyCode" => "USD",
-                    "amount" => $this->helper->formatPrice($order->getGrandTotal())
+                    "amount"       => $this->helper->formatPrice($order->getGrandTotal())
                 ],
-                'customer' => [
-                    'phone' => $billing->getTelephone(),
-                    'email' => $order->getCustomerEmail(),
-                    'name' => $order->getCustomerName(),
-                    'billingAddress' => [
-                        "postalCode" => $billing->getPostcode(),
-                        "city" => $billing->getCity(),
+                'customer'         => [
+                    'phone'           => $billing->getTelephone(),
+                    'email'           => $order->getCustomerEmail(),
+                    'name'            => $order->getCustomerName(),
+                    'billingAddress'  => [
+                        "postalCode"  => $billing->getPostcode(),
+                        "city"        => $billing->getCity(),
                         "countryCode" => $this->countryInformationAcquirer
                             ->getCountryInfo(
                                 $billing->getCountryId()
                             )->getThreeLetterAbbreviation(),
-                        "region" => $billing->getRegion()
+                        "region"      => $billing->getRegion()
                     ],
                     'shippingAddress' => [
-                        "postalCode" => $shipping->getPostcode(),
-                        "city" => $shipping->getCity(),
+                        "postalCode"  => $shipping->getPostcode(),
+                        "city"        => $shipping->getCity(),
                         "countryCode" => $this->countryInformationAcquirer
                             ->getCountryInfo(
                                 $shipping->getCountryId()
                             )->getThreeLetterAbbreviation(),
-                        "region" => $shipping->getRegion()
+                        "region"      => $shipping->getRegion()
                     ]
                 ],
-                'product' => [
-                    'referenceId' => $product->getSku(),
+                'product'          => [
+                    'referenceId'   => $product->getSku(),
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount" => $this->helper->formatPrice($product->getFinalPrice()),
+                        "amount"       => $this->helper->formatPrice($product->getFinalPrice()),
                     ],
-                    'title' => $product->getName(),
-                    'qty' => intval($warranty->getQtyOrdered())
+                    'title'         => $product->getName(),
+                    'qty'           => intval($warranty->getQtyOrdered())
                 ],
-                'currency' => $this->storeManager->getStore()->getCurrentCurrencyCode(),
-                'transactionDate' => $order->getCreatedAt() ? strtotime($order->getCreatedAt()) : strtotime('now'),
-                'source' => [
+                'currency'         => $this->storeManager->getStore()->getCurrentCurrencyCode(),
+                'transactionDate'  => $order->getCreatedAt() ? strtotime($order->getCreatedAt()) : strtotime('now'),
+                'source'           => [
                     "platform" => "magento"
                 ],
-                'plan' => [
+                'plan'             => [
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount" => $this->helper->formatPrice($warranty->getPrice()),
+                        "amount"       => $this->helper->formatPrice($warranty->getPrice()),
                     ],
-                    'planId' => $warrantyId
+                    'planId'        => $warrantyId
                 ]
             ];
 
@@ -112,7 +114,7 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
 
         $address['address1'] = array_shift($street);
         if (!empty($street)) {
-            $address['address2'] = implode(",",$street);
+            $address['address2'] = implode(",", $street);
         }
 
         return $address;

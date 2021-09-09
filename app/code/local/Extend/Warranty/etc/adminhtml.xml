@@ -11,7 +11,7 @@
                         <children>
                             <config>
                                 <children>
-                                    <warranty translate="title"  module="warranty">
+                                    <warranty translate="title" module="warranty">
                                         <title>Extend Warranty</title>
                                     </warranty>
                                 </children>

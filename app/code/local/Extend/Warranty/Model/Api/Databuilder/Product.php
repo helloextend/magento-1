@@ -37,6 +37,7 @@ class Extend_Warranty_Model_Api_Databuilder_Product
             $data['identifiers']['parentSku'] = $_parentSKU;
             $data['identifiers']['type'] = 'configurableChild';
         }
+
         return $data;
     }
 

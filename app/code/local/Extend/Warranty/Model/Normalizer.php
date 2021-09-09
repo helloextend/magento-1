@@ -20,9 +20,9 @@ class Extend_Warranty_Model_Normalizer
             $sku = $item->getSku();
             foreach ($warranties as $warrantyitem) {
                 if ($warrantyitem->getOptionByCode('associated_product')->getValue() == $sku &&
-                    ($item->getProductType() == 'configurable'  || is_null($item->getOptionByCode('parent_product_id')))) {
+                    ($item->getProductType() == 'configurable' || is_null($item->getOptionByCode('parent_product_id')))) {
                     if ($warrantyitem->getQty() <> $item->getQty()) {
-                        if ($item->getQty()>0) {
+                        if ($item->getQty() > 0) {
                             //Update Warranty QTY
                             $warrantyitem->setQty($item->getQty());
                         } else {
