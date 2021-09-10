@@ -1,9 +1,10 @@
-<?php if ($this->isExtendEnabled()): ?>
+<?php $helper = Mage::helper('warranty/connector'); ?>
+<?php if ($helper->isExtendEnabled()): ?>
     <?php $_product = $this->getProduct(); ?>
     <?php $childProduct = $this->getChildProductsSku(); ?>
     <div id="extend-offer"></div>
     <script>
-        Extend.config(<?php echo $this->getJsonConfig()?>);
+        Extend.config(<?php echo $helper->getJsonConfig()?>);
         Extend.buttons.render('#extend-offer', {
             referenceId: '<?php echo $_product->getSku()?>'
         });

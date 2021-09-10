@@ -1,8 +1,39 @@
 <?xml version="1.0"?>
 <layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addCss">
+                <name>css/warranty/custom_styles.css</name>
+            </action>
+        </reference>
+    </default>
     <catalog_product_view>
+        <reference name="head">
+            <block type="core/text" name="extend.sdk.client">
+                <action method="setText" ifconfig="warranty/enableExtend/enable">
+                    <text>
+                        <![CDATA[<script src="https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js"></script>]]>
+                    </text>
+                </action>
+            </block>
+        </reference>
         <reference name="product.info.extrahint">
-            <block type="warranty/buttons" name="extend.warranty.buttons" after="-" template="extend/warranty.phtml" />
+            <block type="warranty/init" name="extend.warranty.init" after="-" template="warranty/warranty.phtml" />
         </reference>
     </catalog_product_view>
+    <checkout_cart_index>
+        <reference name="head">
+            <block type="core/text" name="extend.sdk.client">
+                <action method="setText" ifconfig="warranty/enableExtend/enable">
+                    <text>
+                        <![CDATA[<script src="https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js"></script>]]>
+                    </text>
+                </action>
+            </block>
+        </reference>
+        <reference name="checkout.cart">
+            <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>warranty/checkout/cart/item/default.phtml</template></action>
+            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>warranty/checkout/cart/item/default.phtml</template></action>
+        </reference>
+    </checkout_cart_index>
 </layout>

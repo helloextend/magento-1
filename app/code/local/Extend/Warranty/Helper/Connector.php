@@ -15,6 +15,8 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     const XML_PATH_ENABLE_BALANCE = 'warranty/enableExtend/enableBalance';
     const XML_PATH_ENABLE_CARTOFFERS = 'warranty/enableExtend/enableCartOffers';
     const XML_PATH_ENABLE_REFUNDS = 'warranty/enableExtend/enableRefunds';
+    const DEMO = 'demo';
+    const LIVE = 'live';
 
     /**
      * @var Mage_Core_Model_Store
@@ -146,7 +148,8 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
      * @return bool
      * @throws Mage_Core_Model_Store_Exception
      */
-    public function isDisplayOffersEnabled() {
+    public function isDisplayOffersEnabled()
+    {
         $store = $this->getStore();
         return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_CARTOFFERS, $store);
     }
@@ -155,8 +158,62 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
      * @return bool
      * @throws Mage_Core_Model_Store_Exception
      */
-    public function isRefundEnabled() {
+    public function isRefundEnabled()
+    {
         $store = $this->getStore();
         return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_REFUNDS, $store);
+    }
+
+    /**
+     * @return false|string
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function getJsonConfig()
+    {
+        $data = [
+            'storeId'     => $this->getApiStoreId(),
+            'environment' => $this->isLiveMode() ? self::LIVE : self::DEMO,
+        ];
+
+        return json_encode($data);
+    }
+
+    /**
+     * @param $sku
+     * @param false $fromAdmin
+     * @return bool
+     */
+    public function hasWarranty($sku, $fromAdmin = false)
+    {
+        $quote = $this->getCurrentQuote($fromAdmin);
+        foreach ($quote->getAllVisibleItems() as $item) {
+            if (
+                $item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE
+                && $item->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $sku
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param false $fromAdmin
+     * @return mixed
+     */
+    protected function getCurrentQuote($fromAdmin = false)
+    {
+        if ($fromAdmin) {
+            //todo: need rewrite
+            //$customer_email = 'rasd@gmail.com';
+            //$customer_detail = Mage::getModel("customer/customer");
+            //$customer_detail->setWebsiteId(Mage::app()->getWebsite()->getId());
+            //$customer_detail->loadByEmail($customer_email);
+            //$storeIds = Mage::app()->getWebsite(Mage::app()->getWebsite()->getId())->getStoreIds();
+            //return  Mage::getModel('sales/quote')->setSharedStoreIds($storeIds)->loadByCustomer($customer_detail);
+        }
+
+        return Mage::getSingleton('checkout/session')->getQuote();
     }
 }

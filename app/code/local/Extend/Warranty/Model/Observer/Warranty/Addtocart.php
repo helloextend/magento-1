@@ -13,12 +13,10 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
         $cart->init();
         $qty = $request->getPost('qty');
         $warrantyData = $request->getPost('warranty');
-        $price = Mage::helper('warranty')->removeFormatPrice($warrantyData['price']);
+        $warrantyHelper = Mage::helper('warranty');
+        $price = $warrantyHelper->removeFormatPrice($warrantyData['price']);
         if (!empty($warrantyData)) {
-            $productCollection = Mage::getResourceModel('catalog/product_collection')
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('type_id', array('eq' => 'warranty'));
-            $warranty = $productCollection->getFirstItem();
+            $warranty = $warrantyHelper->getWarrantyProduct();
             if (!$warranty) {
                 Mage::getSingleton('core/session')->addError('Oops! There was an error adding the protection plan product.');
                 Mage::getModel('warranty/logger')->error([], 'Oops! There was an error finding the protection pan product, please ensure the Extend protection plan product is in your catalog and is enabled!');

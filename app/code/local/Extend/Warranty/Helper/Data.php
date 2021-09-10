@@ -41,4 +41,16 @@ class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
 
         return (float)$price;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWarrantyProduct()
+    {
+        $productCollection = Mage::getResourceModel('catalog/product_collection')
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('type_id', array('eq' => 'warranty'));
+
+        return $productCollection->getFirstItem();
+    }
 }

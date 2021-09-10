@@ -1,0 +1,12 @@
+.item-options {
+    font-size: 12px!important;
+}
+.data-table tbody td .item-options {
+    margin: 0px!important;
+}
+.cart-table .product-cart-sku {
+    margin: 5px 0 5px!important;
+}
+.cart-table .item-options {
+    padding-left: 0px!important;
+}

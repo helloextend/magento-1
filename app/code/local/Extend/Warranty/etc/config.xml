@@ -61,6 +61,15 @@
         </catalog>
     </global>
     <frontend>
+        <routers>
+            <warranty>
+                <use>standard</use>
+                <args>
+                    <module>Extend_Warranty</module>
+                    <frontName>warranty</frontName>
+                </args>
+            </warranty>
+        </routers>
         <layout>
             <updates>
                 <warranty>
