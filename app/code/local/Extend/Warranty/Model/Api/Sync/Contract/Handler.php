@@ -7,6 +7,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
     /**
      * @param $contract
      * @return string
+     * @throws Exception
      */
     public function create($contract)
     {
@@ -16,11 +17,12 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
     /**
      * @param $contract
      * @return string
+     * @throws Exception
      */
     private function createRequest($contract)
     {
         try {
-            $response = $this->connector
+            $response = Mage::getModel('warranty/api_connector')
                 ->call(
                     self::ENDPOINT_URI,
                     \Zend_Http_Client::POST,
@@ -28,31 +30,31 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
                 );
 
             return $this->processCreateResponse($response);
-
-        } catch (\Zend_Http_Client_Exception $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
-            return '';
+        } catch (Zend_Http_Client_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (UnexpectedValueException $e) {
+            //TODO: Here we can add Email notification in case empty Contract Id
+            throw new Exception($e->getMessage());
+        } catch (Exception $e) {
+            Mage::getModel('warranty/logger')->critical($e->getMessage());
+            throw new Exception($e->getMessage());
         }
     }
 
     /**
-     * @param Zend_Http_Response $response
+     * @param string $response
      * @return string
      */
-    private function processCreateResponse(\Zend_Http_Response $response)
+    private function processCreateResponse($response)
     {
-        if ($response->isError()) {
-            $res = $this->jsonSerializer->unserialize($response->getBody());
-            $this->logger->error('Contract Request Fail', $res);
-
-        } elseif ($response->getStatus() === 201 || $response->getStatus() === 202) {
-            $res = $this->jsonSerializer->unserialize($response->getBody());
-            $contractId = $res['id'];
-            $this->logger->info(__('Contract #%1 request successful', $contractId));
-            return $contractId;
+        $responseArray = json_decode($response, true);
+        $contractId = !empty($responseArray['id']) ? $responseArray['id'] : '';
+        if (!$contractId) {
+            throw new UnexpectedValueException('Contract ID is Empty');
         }
 
-        return '';
+        Mage::getModel('warranty/logger')->info([], Mage::helper('warranty')->__('Contract #%s request successful', $contractId));
+        return $contractId;
     }
 
 

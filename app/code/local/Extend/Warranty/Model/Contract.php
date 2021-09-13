@@ -1,15 +1,15 @@
 <?php
 
-class Extend_Warranty_Model_WarrantyContract
+class Extend_Warranty_Model_Contract
 {
     /**
-     * @param OrderInterface $order
+     * @param Mage_Sales_Model_Order $order
      * @param $warranties
      */
     public function createContract($order, $warranties)
     {
         try {
-            $contracts = $this->contractBuilder->prepareInfo($order, $warranties);
+            $contracts = Mage::getModel('warranty/api_databuilder_contract')->prepareInfo($order, $warranties);
             foreach ($contracts as $key => $contract) {
                 //validate qty of contracts required
                 if ($contract['product']['qty'] > 1) {
@@ -17,14 +17,14 @@ class Extend_Warranty_Model_WarrantyContract
                     $tempcontract = $contract;
                     unset($tempcontract['product']['qty']);
                     for ($x = 1; $x <= $contract['product']['qty']; $x++) {
-                        $contractIds[$x] = $this->contractsRequest->create($contract);
+                        $contractIds[$x] = Mage::getModel('warranty/api_sync_contract_handler')->create($contract);
                         //array_push($contractIds,$this->contractsRequest->create($contract));
                     }
                     unset($tempcontract);
                     $contractId = json_encode($contractIds);
                     unset($contractIds);
                 } else {
-                    $contractId = json_encode(array('1' => $this->contractsRequest->create($contract)));
+                    $contractId = json_encode(array('1' => Mage::getModel('warranty/api_sync_contract_handler')->create($contract)));
                 }
 
                 if (!empty($contractId)) {

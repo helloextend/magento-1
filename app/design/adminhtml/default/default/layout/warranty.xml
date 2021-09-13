@@ -2,21 +2,50 @@
 <layout>
     <default>
         <reference name="head">
-            <action method="addCss">
-                <name>css/warranty/custom_admin.css</name>
-            </action>
-            <action method="addItem">
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/jquery-1.12.1.js</script>
             </action>
-            <action method="addItem">
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/noconflict.js</script>
             </action>
-            <action method="addItem">
+        </reference>
+    </default>
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addCss" ifconfig="warranty/enableExtend/enable">
+                <name>css/warranty/custom_admin.css</name>
+            </action>
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>skin_js</type>
                 <script>js/warranty/custom_admin.js</script>
             </action>
         </reference>
-    </default>
+    </adminhtml_system_config_edit>
+    <adminhtml_sales_order_create_index>
+        <reference name="head">
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
+                <type>skin_js</type>
+                <script>js/warranty/load-extend-sdk-client.js</script>
+            </action>
+        </reference>
+        <reference name="order_item_extra_info">
+            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-" template="warranty/sales/order/create/warranty.phtml"/>
+        </reference>
+    </adminhtml_sales_order_create_index>
+    <adminhtml_sales_order_create_load_block_items>
+        <reference name="order_item_extra_info">
+            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-" template="warranty/sales/order/create/warranty.phtml"/>
+        </reference>
+    </adminhtml_sales_order_create_load_block_items>
+    <adminhtml_sales_order_view>
+        <reference name="order_items">
+            <action method="addColumnRender" ifconfig="warranty/enableExtend/enable">
+                <column>name</column>
+                <block>adminhtml/sales_items_column_name</block>
+                <template>warranty/sales/items/column/name.phtml</template>
+            </action>
+        </reference>
+    </adminhtml_sales_order_view>
 </layout>

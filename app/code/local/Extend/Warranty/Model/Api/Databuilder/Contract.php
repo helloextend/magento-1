@@ -3,40 +3,38 @@
 class Extend_Warranty_Model_Api_Databuilder_Contract
 {
     /**
-     * @param Order $order
+     * @param Mage_Sales_Model_Order $order
      * @param $warranties
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws Mage_Core_Model_Store_Exception
      */
     public function prepareInfo($order, $warranties)
     {
         $contracts = [];
-
-        /** @var \Magento\Sales\Model\Order\Item $warranty */
         foreach ($warranties as $key => $warranty) {
-            $productSku = $warranty->getProductOptionByCode(Type::ASSOCIATED_PRODUCT);
-            $warrantyId = $warranty->getProductOptionByCode(Type::WARRANTY_ID);
+            $productSku = $warranty->getProductOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT);
+            $warrantyId = $warranty->getProductOptionByCode(Extend_Warranty_Model_Product_Type::WARRANTY_ID);
 
             if (empty($productSku) || empty($warrantyId)) {
                 continue;
             }
 
-            try {
-                $product = $this->productRepository->get($productSku);
-            } catch (NoSuchEntityException $exception) {
-                continue;
+            foreach($order->getAllItems() as $item){
+                if($item->getSku() !== $productSku) {
+                    continue;
+                }
+
+                $product = $item->getProduct();
             }
 
             $billing = $order->getBillingAddress();
-
             $shipping = $order->getShippingAddress();
-
 
             $contracts[$key] = [
                 'transactionId'    => $order->getIncrementId(),
                 'transactionTotal' => [
                     "currencyCode" => "USD",
-                    "amount"       => $this->helper->formatPrice($order->getGrandTotal())
+                    "amount"       => Mage::helper('warranty')->formatPrice($order->getGrandTotal())
                 ],
                 'customer'         => [
                     'phone'           => $billing->getTelephone(),
@@ -45,19 +43,13 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                     'billingAddress'  => [
                         "postalCode"  => $billing->getPostcode(),
                         "city"        => $billing->getCity(),
-                        "countryCode" => $this->countryInformationAcquirer
-                            ->getCountryInfo(
-                                $billing->getCountryId()
-                            )->getThreeLetterAbbreviation(),
+                        "countryCode" => Mage::getModel('directory/country')->load($billing->getCountryId())->getIso3Code(),
                         "region"      => $billing->getRegion()
                     ],
                     'shippingAddress' => [
                         "postalCode"  => $shipping->getPostcode(),
                         "city"        => $shipping->getCity(),
-                        "countryCode" => $this->countryInformationAcquirer
-                            ->getCountryInfo(
-                                $shipping->getCountryId()
-                            )->getThreeLetterAbbreviation(),
+                        "countryCode" => Mage::getModel('directory/country')->load($shipping->getCountryId())->getIso3Code(),
                         "region"      => $shipping->getRegion()
                     ]
                 ],
@@ -65,12 +57,12 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                     'referenceId'   => $product->getSku(),
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount"       => $this->helper->formatPrice($product->getFinalPrice()),
+                        "amount"       => Mage::helper('warranty')->formatPrice($product->getFinalPrice()),
                     ],
                     'title'         => $product->getName(),
-                    'qty'           => intval($warranty->getQtyOrdered())
+                    'qty'           => (int)$warranty->getQtyOrdered()
                 ],
-                'currency'         => $this->storeManager->getStore()->getCurrentCurrencyCode(),
+                'currency'         => Mage::app()->getStore()->getCurrentCurrencyCode(),
                 'transactionDate'  => $order->getCreatedAt() ? strtotime($order->getCreatedAt()) : strtotime('now'),
                 'source'           => [
                     "platform" => "magento"
@@ -78,7 +70,7 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                 'plan'             => [
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount"       => $this->helper->formatPrice($warranty->getPrice()),
+                        "amount"       => Mage::helper('warranty')->formatPrice($warranty->getPrice()),
                     ],
                     'planId'        => $warrantyId
                 ]
@@ -108,7 +100,7 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
         return $contracts;
     }
 
-    private function formatStreet($street): array
+    private function formatStreet($street)
     {
         $address = [];
 

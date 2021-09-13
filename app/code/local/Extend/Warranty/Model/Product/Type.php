@@ -44,7 +44,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
      * @param Mage_Catalog_Model_Product|null $product
      * @return array
      */
-    public function getOrderOptions($product)
+    public function getOrderOptions($product = NULL)
     {
         $options = parent::getOrderOptions($product);
 

@@ -59,7 +59,28 @@
                 </type>
             </product>
         </catalog>
+        <events>
+            <sales_order_invoice_pay>
+                <observers>
+                    <warranty_invoice_pay>
+                        <class>warranty/observer_createcontract</class>
+                        <method>execute</method>
+                    </warranty_invoice_pay>
+                </observers>
+            </sales_order_invoice_pay>
+        </events>
     </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <extend before="Mage_Adminhtml">Extend_Warranty_Adminhtml</extend>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <frontend>
         <routers>
             <warranty>

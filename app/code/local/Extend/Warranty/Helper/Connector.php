@@ -112,7 +112,7 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     {
         Mage::getModel('core/config')->saveConfig(
             self::XML_PATH_LAST_SYNC_PATH,
-            Mage::getModel('core/date')->date('Y-m-d H:i:s')
+            Mage::getModel('core/date')->date('Y-m-d H:i:s') . ' Selected Timezone: ' . Mage::getStoreConfig('general/locale/timezone')
         );
     }
 
@@ -205,13 +205,7 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     protected function getCurrentQuote($fromAdmin = false)
     {
         if ($fromAdmin) {
-            //todo: need rewrite
-            //$customer_email = 'rasd@gmail.com';
-            //$customer_detail = Mage::getModel("customer/customer");
-            //$customer_detail->setWebsiteId(Mage::app()->getWebsite()->getId());
-            //$customer_detail->loadByEmail($customer_email);
-            //$storeIds = Mage::app()->getWebsite(Mage::app()->getWebsite()->getId())->getStoreIds();
-            //return  Mage::getModel('sales/quote')->setSharedStoreIds($storeIds)->loadByCustomer($customer_detail);
+            return Mage::getSingleton('adminhtml/session_quote')->getQuote();
         }
 
         return Mage::getSingleton('checkout/session')->getQuote();
