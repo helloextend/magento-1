@@ -3,7 +3,6 @@ $_item = $this->getItem();
 $_product = $_item->getProduct();
 $helper = Mage::helper('warranty/connector');
 ?>
-
 <?php if ($_product->getTypeId() !== 'warranty'): ?>
     <?php if ($helper->isDisplayOffersEnabled()): ?>
         <?php if (!$helper->hasWarranty($_product->getSku(), true)): ?>
@@ -43,6 +42,4 @@ $helper = Mage::helper('warranty/connector');
             </tbody>
         <?php endif; ?>
     <?php endif; ?>
-<?php elseif(($_product->getTypeId() === 'warranty')): ?>sadasdasdasd
-    <?php echo $_item->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue()?>
 <?php endif; ?>
