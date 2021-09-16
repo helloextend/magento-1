@@ -33,27 +33,6 @@
 <?php if ($_item = $this->getItem()): ?>
     <h5 class="title"><span id="order_item_<?php echo $_item->getId() ?>_title"><?php echo $this->escapeHtml($_item->getName()) ?></span></h5>
     <div><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong> <?php echo implode('<br />', Mage::helper('catalog')->splitSku($this->escapeHtml($this->getSku()))); ?></div>
-    <?php if($_item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE): ?>
-        <?php
-        $_productOptions = $_item->getProductOptions();
-        $_planId = isset($_productOptions["warranty_id"]) ? $_productOptions["warranty_id"] : '';
-        $_contractID = json_decode($_item->getContractId()) === NULL ? [$_item->getContractId()] : json_decode($_item->getContractId(), true);
-        $_contractID = is_array($_contractID) ? $_contractID : [$_contractID];
-
-        $_refunded = (isset($_productOptions["refund"]) && true === $_productOptions["refund"])
-            ? "-- All refunded --" : '';
-        ?>
-        <div class="product-warranty-block">
-            <br />
-            <?php if (empty($_refunded)): ?>
-                <span><?= $this->escapeHtml(__('Contract ID'))?>: </span>
-                <?= implode(", ", $_contractID) ?>
-            <?php else: ?>
-                <?= $this->escapeHtml($_refunded); ?>
-            <?php endif; ?>
-            <br /><span><?= $this->escapeHtml(__('Plan ID'))?>: </span><?= $_planId ?>
-        </div>
-    <?php endif; ?>
     <?php if ($this->getOrderOptions()): ?>
         <dl class="item-options">
             <?php foreach ($this->getOrderOptions() as $_option): ?>
@@ -76,6 +55,27 @@
                 </dd>
             <?php endforeach; ?>
         </dl>
+    <?php endif; ?>
+    <?php if($_item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE): ?>
+        <?php
+        $_productOptions = $_item->getProductOptions();
+        $_planId = isset($_productOptions["warranty_id"]) ? $_productOptions["warranty_id"] : '';
+        $_contractID = json_decode($_item->getContractId()) === NULL ? [$_item->getContractId()] : json_decode($_item->getContractId(), true);
+        $_contractID = is_array($_contractID) ? $_contractID : [$_contractID];
+
+        $_refunded = (isset($_productOptions["refund"]) && true === $_productOptions["refund"])
+            ? "-- All refunded --" : '';
+        ?>
+        <div class="product-warranty-block">
+            <br />
+            <?php if (empty($_refunded)): ?>
+                <span><?= $this->escapeHtml(__('Contract ID'))?>: </span>
+                <?= implode(", ", $_contractID) ?>
+            <?php else: ?>
+                <?= $this->escapeHtml($_refunded); ?>
+            <?php endif; ?>
+            <br /><span><?= $this->escapeHtml(__('Plan ID'))?>: </span><?= $_planId ?>
+        </div>
     <?php endif; ?>
     <?php echo $this->escapeHtml($_item->getDescription()) ?>
 <?php endif; ?>

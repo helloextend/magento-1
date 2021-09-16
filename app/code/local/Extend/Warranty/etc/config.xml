@@ -68,6 +68,15 @@
                     </warranty_invoice_pay>
                 </observers>
             </sales_order_invoice_pay>
+            <sales_convert_quote_item_to_order_item>
+                <observers>
+                    <warranty_setcustomoption_observer>
+                        <type>singleton</type>
+                        <class>warranty/observer_quoteconverter</class>
+                        <method>salesConvertQuoteItemToOrderItem</method>
+                    </warranty_setcustomoption_observer>
+                </observers>
+            </sales_convert_quote_item_to_order_item>
         </events>
     </global>
     <admin>
@@ -107,6 +116,14 @@
                     </warranty>
                 </observers>
             </checkout_cart_add_product_complete>
+            <sales_quote_product_add_after>
+                <observers>
+                    <warranty>
+                        <class>warranty/observer_warranty_reorder</class>
+                        <method>execute</method>
+                    </warranty>
+                </observers>
+            </sales_quote_product_add_after>
             <sales_quote_remove_item>
                 <observers>
                     <warranty>

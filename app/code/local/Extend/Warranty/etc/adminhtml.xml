@@ -7,6 +7,16 @@
             </all>
             <admin>
                 <children>
+                    <warranty translate="title" module="warranty">
+                        <title>Extend Warranty</title>
+                        <sort_order>100</sort_order>
+                        <children>
+                            <add translate='title'>
+                                <title>Add Action</title>
+                                <sort_order>1</sort_order>
+                            </add>
+                        </children>
+                    </warranty>
                     <system>
                         <children>
                             <config>

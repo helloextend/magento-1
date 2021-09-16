@@ -75,9 +75,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         ];
 
         $options = [];
-
         foreach ($warrantyProperties as $property => $label) {
-
             if ($attributesOption = $product->getCustomOption($property)) {
                 $data = $attributesOption->getValue();
                 if (!$data) {
@@ -107,10 +105,8 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     protected function _prepareProduct(Varien_Object $buyRequest, $product, $processMode)
     {
         $price = Mage::helper('warranty')->removeFormatPrice($buyRequest->getPrice());
-
         $buyRequest->setData('original_custom_price', $price);
         $product->setFinalPrice($price);
-
         $product->addCustomOption(self::WARRANTY_ID, $buyRequest->getData('planId'));
         $product->addCustomOption(self::ASSOCIATED_PRODUCT, $buyRequest->getProduct());
         $product->addCustomOption(self::TERM, $buyRequest->getTerm());

@@ -1,0 +1,1 @@
+document.write("<script src=\"https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js\"></script>");
