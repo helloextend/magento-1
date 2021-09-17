@@ -2,9 +2,6 @@
 
 class Extend_Warranty_CartController extends Mage_Core_Controller_Front_Action
 {
-    /**
-     *
-     */
     public function addAction()
     {
         $warrantyData = $this->getRequest()->getPost('warranty');

@@ -100,6 +100,10 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
         return $contracts;
     }
 
+    /**
+     * @param $street
+     * @return array
+     */
     private function formatStreet($street)
     {
         $address = [];

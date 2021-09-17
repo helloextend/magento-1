@@ -3,7 +3,7 @@
 class Extend_Warranty_Model_Observer_Warranty_Normalize
 {
     /**
-     * @inheritDoc
+     * @param Varien_Event_Observer $observer
      */
     public function execute(Varien_Event_Observer $observer)
     {
@@ -22,6 +22,9 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
         }
     }
 
+    /**
+     * @param $quote
+     */
     private function _normalize($quote)
     {
         //split cart items from products and warranties
@@ -54,6 +57,7 @@ class Extend_Warranty_Model_Observer_Warranty_Normalize
                 }
             }
         }
+
         $quote->setTriggerRecollect(1);
         $quote->collectTotals()->save();
     }

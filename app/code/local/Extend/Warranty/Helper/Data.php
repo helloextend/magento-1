@@ -2,8 +2,6 @@
 
 class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const NOT_ALLOWED_TYPES = [Extend_Warranty_Model_Product_Type::TYPE_CODE];
-
     /**
      * @param $price
      * @return float|int

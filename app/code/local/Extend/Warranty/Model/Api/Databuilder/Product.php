@@ -9,7 +9,19 @@ class Extend_Warranty_Model_Api_Databuilder_Product
     public function build($productSubject)
     {
         $description = !empty($productSubject->getShortDescription()) ? (string)$productSubject->getShortDescription() : 'No description';
-        $imgUrl = $productSubject->getImageUrl();
+        try {
+            $imgUrl = $productSubject->getImageUrl();
+        } catch (Exception $e) {
+            Mage::getModel('warranty/logger')->error(
+                [
+                    'id'   => $productSubject->getId(),
+                    'sku'  => $productSubject->getSku(),
+                    'name' => $productSubject->getName(),
+                ],
+                $e->getMessage()
+            );
+        }
+
         $data = [
             'title'       => (string)$productSubject->getName(),
             'description' => $description,

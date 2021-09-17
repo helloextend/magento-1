@@ -115,7 +115,6 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         if ($this->_isStrictProcessMode($processMode)) {
             $product->setCartQty($buyRequest->getQty());
         }
-
         $product->setQty($buyRequest->getQty());
 
         return $product;

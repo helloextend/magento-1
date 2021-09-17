@@ -2,6 +2,9 @@
 
 class Extend_Warranty_Model_Normalizer
 {
+    /**
+     * @param Mage_Checkout_Model_Cart $cart
+     */
     public function normalize(Mage_Checkout_Model_Cart $cart)
     {
         //split cart items from products and warranties

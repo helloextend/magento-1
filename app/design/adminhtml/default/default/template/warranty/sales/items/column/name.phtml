@@ -31,8 +31,12 @@
 ?>
 
 <?php if ($_item = $this->getItem()): ?>
-    <h5 class="title"><span id="order_item_<?php echo $_item->getId() ?>_title"><?php echo $this->escapeHtml($_item->getName()) ?></span></h5>
-    <div><strong><?php echo $this->helper('sales')->__('SKU') ?>:</strong> <?php echo implode('<br />', Mage::helper('catalog')->splitSku($this->escapeHtml($this->getSku()))); ?></div>
+    <h5 class="title"><span
+                id="order_item_<?php echo $_item->getId() ?>_title"><?php echo $this->escapeHtml($_item->getName()) ?></span>
+    </h5>
+    <div><strong><?php echo $this->helper('sales')->__('SKU') ?>
+            :</strong> <?php echo implode('<br />', Mage::helper('catalog')->splitSku($this->escapeHtml($this->getSku()))); ?>
+    </div>
     <?php if ($this->getOrderOptions()): ?>
         <dl class="item-options">
             <?php foreach ($this->getOrderOptions() as $_option): ?>
@@ -42,13 +46,23 @@
                         <?php echo $this->getCustomizedOptionValue($_option); ?>
                     <?php else: ?>
                         <?php $_option = $this->getFormattedOption($_option['value']); ?>
-                        <?php echo $_option['value']; ?><?php if (isset($_option['remainder']) && $_option['remainder']): ?><span id="<?php echo $_dots = 'dots' . uniqid()?>"> ...</span><span id="<?php echo $_id = 'id' . uniqid()?>"><?php echo $_option['remainder'] ?></span>
+                        <?php echo $_option['value']; ?><?php if (isset($_option['remainder']) && $_option['remainder']): ?>
+                            <span id="<?php echo $_dots = 'dots' . uniqid() ?>"> ...</span><span
+                                    id="<?php echo $_id = 'id' . uniqid() ?>"><?php echo $_option['remainder'] ?></span>
                             <script type="text/javascript">
                                 $('<?php echo $_id ?>').hide();
-                                $('<?php echo $_id ?>').up().observe('mouseover', function(){$('<?php echo $_id ?>').show();});
-                                $('<?php echo $_id ?>').up().observe('mouseover', function(){$('<?php echo $_dots?>').hide();});
-                                $('<?php echo $_id ?>').up().observe('mouseout',  function(){$('<?php echo $_id ?>').hide();});
-                                $('<?php echo $_id ?>').up().observe('mouseout',  function(){$('<?php echo $_dots ?>').show();});
+                                $('<?php echo $_id ?>').up().observe('mouseover', function () {
+                                    $('<?php echo $_id ?>').show();
+                                });
+                                $('<?php echo $_id ?>').up().observe('mouseover', function () {
+                                    $('<?php echo $_dots?>').hide();
+                                });
+                                $('<?php echo $_id ?>').up().observe('mouseout', function () {
+                                    $('<?php echo $_id ?>').hide();
+                                });
+                                $('<?php echo $_id ?>').up().observe('mouseout', function () {
+                                    $('<?php echo $_dots ?>').show();
+                                });
                             </script>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -56,7 +70,7 @@
             <?php endforeach; ?>
         </dl>
     <?php endif; ?>
-    <?php if($_item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE): ?>
+    <?php if ($_item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE): ?>
         <?php
         $_productOptions = $_item->getProductOptions();
         $_planId = isset($_productOptions["warranty_id"]) ? $_productOptions["warranty_id"] : '';
@@ -67,15 +81,38 @@
             ? "-- All refunded --" : '';
         ?>
         <div class="product-warranty-block">
-            <br />
+            <br/>
             <?php if (empty($_refunded)): ?>
-                <span><?= $this->escapeHtml(__('Contract ID'))?>: </span>
+                <span><?= $this->escapeHtml(__('Contract ID')) ?>: </span>
                 <?= implode(", ", $_contractID) ?>
             <?php else: ?>
-                <?= $this->escapeHtml($_refunded); ?>
+                <span style="background: #fcfac9; color: #eb5e00; padding: 5px 0">
+                    <strong><?= $this->escapeHtml($_refunded) ?></strong>
+                </span>
             <?php endif; ?>
-            <br /><span><?= $this->escapeHtml(__('Plan ID'))?>: </span><?= $_planId ?>
+            <br/><span><?= $this->escapeHtml(__('Plan ID')) ?>: </span><?= $_planId ?>
+
+            <?php
+            if (
+                Mage::helper('warranty/connector')->isRefundEnabled()
+                && $_item->getStatusId() == Mage_Sales_Model_Order_Item::STATUS_INVOICED
+            ) {
+                $html = "";
+                if (isset($_productOptions['refund']) && $_productOptions['refund'] === false) {
+                    $html .= '<div id="' . $this->getHtmlId() . '">';
+                    $html .= '<button type="button" class="action action-extend-refund"' . " data-current_item_id='{$_item->getId()}' >Request Refund</button>";
+                    $html .= '</div>';
+                } else if (isset($_productOptions['refund']) && $_productOptions['refund'] === true) {
+                    $html .= '<div id="' . $this->getHtmlId() . '">';
+                    $html .= '<button type="button" class="action action-extend-refund disabled" >Refunded</button>';
+                    $html .= '</div>';
+                }
+                echo $html;
+            } ?>
         </div>
+        <script>
+            refundConfig[<?php echo $_item->getId()?>] = <?php echo $this->getDataInit($_item, $this->canShowPartial($_item))?>;
+        </script>
     <?php endif; ?>
     <?php echo $this->escapeHtml($_item->getDescription()) ?>
 <?php endif; ?>

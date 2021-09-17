@@ -21,6 +21,13 @@
                 <type>skin_js</type>
                 <script>js/warranty/custom_admin.js</script>
             </action>
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
+                <type>js_css</type>
+                <name>prototype/windows/themes/default.css</name>
+            </action>
+            <action method="addCss" ifconfig="warranty/enableExtend/enable">
+                <name>lib/prototype/windows/themes/magento.css</name>
+            </action>
         </reference>
     </adminhtml_system_config_edit>
     <adminhtml_sales_order_create_index>
@@ -52,10 +59,23 @@
         </reference>
     </adminhtml_sales_order_create_index>
     <adminhtml_sales_order_view>
+        <reference name="head">
+            <action method="addItem" ifconfig="warranty/enableExtend/enableRefunds">
+                <type>skin_js</type>
+                <script>js/warranty/contract/refund.js</script>
+            </action>
+            <action method="addItem" ifconfig="warranty/enableExtend/enableRefunds">
+                <type>js_css</type>
+                <name>prototype/windows/themes/default.css</name>
+            </action>
+            <action method="addCss" ifconfig="warranty/enableExtend/enableRefunds">
+                <name>lib/prototype/windows/themes/magento.css</name>
+            </action>
+        </reference>
         <reference name="order_items">
             <action method="addColumnRender" ifconfig="warranty/enableExtend/enable">
                 <column>name</column>
-                <block>adminhtml/sales_items_column_name</block>
+                <block>warranty/adminhtml_sales_items_column_name</block>
                 <template>warranty/sales/items/column/name.phtml</template>
             </action>
         </reference>
