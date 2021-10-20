@@ -61,7 +61,7 @@ class Extend_Warranty_Model_Api_Connector
             $data = 'Request Body is Empty';
         }
 
-        Mage::getModel('warranty/logger')->info($data, 'Request Data, Method: ' . $method . ', Endpoint URI: ' . $apiUri, 'Request Body');
+        Mage::getModel('warranty/logger')->info('Request Data, Method: ' . $method . ', Endpoint URI: ' . $apiUri, $data, 'Request Body');
         $response = $client->request();
 
         if ($response->isError()) {
@@ -71,7 +71,7 @@ class Extend_Warranty_Model_Api_Connector
             throw new Zend_Http_Client_Exception($message);
         }
 
-        Mage::getModel('warranty/logger')->info($response, 'Response Data, Method: ' . $method . ', Endpoint URI: ' . $apiUri, 'Response');
+        Mage::getModel('warranty/logger')->info('Response Data, Method: ' . $method . ', Endpoint URI: ' . $apiUri, $response, 'Response');
         return $response->getBody();
     }
 
@@ -81,7 +81,7 @@ class Extend_Warranty_Model_Api_Connector
      */
     protected function initClient()
     {
-        $client = new Varien_Http_Client();
+        $client = new Zend_Http_Client();
         $client->setHeaders(
             array(
                 'Accept'                => ' application/json; version=' . self::API_VERSION,

@@ -29,7 +29,7 @@ class Extend_Warranty_Model_Api_Sync_Products_Handler
                 $info = array_column($section, 'referenceId');
                 $syncedData[$name] = $info;
             }
-            Mage::getModel('warranty/logger')->info($syncedData, '', 'Synced Data');
+            Mage::getModel('warranty/logger')->info('', $syncedData, 'Synced Data');
         } catch (Zend_Http_Client_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (Exception $e) {

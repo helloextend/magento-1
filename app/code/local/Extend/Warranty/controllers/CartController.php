@@ -9,7 +9,7 @@ class Extend_Warranty_CartController extends Mage_Core_Controller_Front_Action
             $warranty = Mage::helper('warranty')->getWarrantyProduct();
             if (!$warranty) {
                 Mage::getSingleton('core/session')->addError('Sorry! We can\'t add this product protection to your shopping cart right now.');
-                Mage::getModel('warranty/logger')->error([], 'Oops! There was an error finding the protection plan product, please ensure the protection plan product is in your catalog and is enabled!');
+                Mage::getModel('warranty/logger')->error('Oops! There was an error finding the protection plan product, please ensure the protection plan product is in your catalog and is enabled!');
                 return $this->goBack();
             }
 
@@ -40,7 +40,7 @@ class Extend_Warranty_CartController extends Mage_Core_Controller_Front_Action
             return $this->goBack(null, $warranty);
         } catch (\Exception $e) {
             Mage::getSingleton('core/session')->addError($this->__('Sorry! We can\'t add this product protection to your shopping cart right now.'));
-            Mage::getModel('warranty/logger')->error([], $e->getMessage());
+            Mage::getModel('warranty/logger')->error($e->getMessage());
             return $this->goBack();
         }
     }

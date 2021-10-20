@@ -110,7 +110,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         $product->addCustomOption(self::WARRANTY_ID, $buyRequest->getData('planId'));
         $product->addCustomOption(self::ASSOCIATED_PRODUCT, $buyRequest->getProduct());
         $product->addCustomOption(self::TERM, $buyRequest->getTerm());
-        $product->addCustomOption(self::BUY_REQUEST, json_encode($buyRequest->getData()));
+        $product->addCustomOption(self::BUY_REQUEST, serialize($buyRequest->getData()));
 
         if ($this->_isStrictProcessMode($processMode)) {
             $product->setCartQty($buyRequest->getQty());

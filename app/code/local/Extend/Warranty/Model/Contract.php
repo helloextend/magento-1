@@ -46,7 +46,7 @@ class Extend_Warranty_Model_Contract
             }
 
         } catch (Exception $e) {
-            Mage::getModel('warranty/logger')->error(['message' => $e->getMessage()], 'Error while creating warranty contract');
+            Mage::getModel('warranty/logger')->error('Error while creating warranty contract',['message' => $e->getMessage()]);
         }
     }
 }

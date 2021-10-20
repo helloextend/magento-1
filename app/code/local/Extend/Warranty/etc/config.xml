@@ -80,6 +80,16 @@
         </events>
     </global>
     <admin>
+        <events>
+            <controller_action_layout_render_before_adminhtml_system_config_edit>
+                <observers>
+                    <warranty_update_layout_head>
+                        <class>warranty/observer_updatelayout</class>
+                        <method>execute</method>
+                    </warranty_update_layout_head>
+                </observers>
+            </controller_action_layout_render_before_adminhtml_system_config_edit>
+        </events>
         <routers>
             <adminhtml>
                 <args>
@@ -166,4 +176,17 @@
             </products>
         </warranty>
     </default>
+
+    <crontab>
+        <jobs>
+            <extend_product_sync>
+                <schedule>
+                    <cron_expr>*/30 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>warranty/productSyncProcessor::process</model>
+                </run>
+            </extend_product_sync>
+        </jobs>
+    </crontab>
 </config>

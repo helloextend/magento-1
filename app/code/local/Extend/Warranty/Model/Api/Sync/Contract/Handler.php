@@ -53,7 +53,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
             throw new UnexpectedValueException('Contract ID is Empty');
         }
 
-        Mage::getModel('warranty/logger')->info([], Mage::helper('warranty')->__('Contract #%s request successful', $contractId));
+        Mage::getModel('warranty/logger')->info(Mage::helper('warranty')->__('Contract #%s request successful', $contractId));
         return $contractId;
     }
 
@@ -83,7 +83,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
 
             return $this->processRefundResponse($response);
         } catch (\Zend_Http_Client_Exception $e) {
-            Mage::getModel('warranty/logger')->error(['exception' => $e], $e->getMessage());
+            Mage::getModel('warranty/logger')->error($e->getMessage(),['exception' => $e]);
             return false;
         }
     }
@@ -96,7 +96,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
     {
         $response = json_decode($response, true);
         if (!empty($response['status'])) {
-            Mage::getModel('warranty/logger')->info([], 'Refund Request Success');
+            Mage::getModel('warranty/logger')->info('Refund Request Success');
             return true;
         }
 
@@ -105,15 +105,15 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
             if (
                 isset($response["message"])
                 && $response["message"] === "The contract has already been refunded") {
-                Mage::getModel('warranty/logger')->info([], 'Refund Request already processed');
+                Mage::getModel('warranty/logger')->info('Refund Request already processed');
                 return true;
             }
         } catch (\Exception $e) {
-            Mage::getModel('warranty/logger')->error(['exception' => $e], $e->getMessage());
+            Mage::getModel('warranty/logger')->error($e->getMessage(),['exception' => $e]);
             return false;
         }
 
-        Mage::getModel('warranty/logger')->error($response, 'Refund Request Fail');
+        Mage::getModel('warranty/logger')->error('Refund Request Fail',$response);
         return false;
     }
 
@@ -148,7 +148,7 @@ class Extend_Warranty_Model_Api_Sync_Contract_Handler
 
             return $bodyArray;
         } catch (\Zend_Http_Client_Exception $e) {
-            Mage::getModel('warranty/logger')->error(['exception' => $e], $e->getMessage());
+            Mage::getModel('warranty/logger')->error($e->getMessage(),['exception' => $e]);
             return false;
         }
     }

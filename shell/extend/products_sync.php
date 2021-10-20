@@ -6,40 +6,25 @@ class Extend_Products_Sync extends Local_Shell_Abstract
 {
     public function run()
     {
-        try {
-            $batchSize = $this->getArg('batch-size');
-            if (!$batchSize) {
-                $batchSize = Mage::helper('warranty/connector')->getBatchSize();
-            }
-            if ($batchSize > 100 || $batchSize <= 0) {
-                $this->log->alert('Invalid batch size, value must be between 1-100.');
-                exit;
-            }
-            $this->log->info('Setting product batch to ' . $batchSize);
-            $productCollection = Mage::getResourceModel('catalog/product_collection')
-                ->addAttributeToSelect('*')
-                ->addAttributeToFilter('type_id', array('neq' => 'warranty'));
-            $this->log->info("Started syncing products from Magento to Extend. Please wait!");
-            $productCollection->setPageSize($batchSize);
-            $pages = $productCollection->getLastPageNumber();
-            $this->log->info('Total batches: ' . $pages);
-            $currentPage = 1;
-            $bar = $this->progressBar($pages);
-            do {
-                $productCollection->setCurPage($currentPage);
-                $productCollection->load();
-                Mage::getModel('warranty/api_sync_products_handler')->sync($productCollection, $currentPage);
-                $message = "Updated batch " . $currentPage;
-                $bar->update($currentPage, $message);
-                $currentPage++;
-                $productCollection->clear();
-            } while ($currentPage <= $pages);
-            $this->log->info("Syncing was finished");
-            Mage::helper('warranty/connector')->setLastSyncDate();
-        } catch (Exception $e) {
-            $this->log->crit($e->getMessage());
-            $this->log->crit('Syncing has been stopped!');
+        $batchSize = $this->getArg('batch-size');
+        $logger = $this->initLog();
+        /** @var Extend_Warranty_Model_ProductSyncProcessor $productSyncProcessor */
+        $productSyncProcessor = Mage::getModel(
+            'warranty/productSyncProcessor'
+        );
+
+        $productSyncProcessor->setLogger($logger);
+
+        if ($batchSize) {
+            $productSyncProcessor->setBatchSize($batchSize);
         }
+
+        $pagesCount = $productSyncProcessor->getProductCollection()->getLastPageNumber();
+
+        $bar = $this->progressBar($pagesCount);
+
+        $productSyncProcessor->setProgressBar($bar);
+        $productSyncProcessor->process();
     }
 
     /**

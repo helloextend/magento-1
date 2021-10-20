@@ -8,13 +8,14 @@ class Extend_Warranty_Model_Observer_Warranty_Reorder
      */
     public function execute(Varien_Event_Observer $observer)
     {
-        $item = reset($observer->getItems());
+        $items = $observer->getItems();
+        $item = reset($items);
         if (
             $item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE
             && $item->getProduct()->getCustomOption('info_buyRequest')
         ) {
             try {
-                $buyRequest = json_decode($item->getProduct()->getCustomOption('info_buyRequest')->getValue(), true);
+                $buyRequest = unserialize($item->getProduct()->getCustomOption('info_buyRequest')->getValue());
                 $warrantyHelper = Mage::helper('warranty');
                 $price = !empty($buyRequest['price']) ? $buyRequest['price'] : 0;
                 $price = $warrantyHelper->removeFormatPrice($price);

@@ -7,7 +7,7 @@ class Extend_Warranty_Adminhtml_ProductsController extends Mage_Adminhtml_Contro
      */
     public function syncAction()
     {
-        $data = [];
+        $data = array();
         try {
             $batchSize = Mage::helper('warranty/connector')->getBatchSize();
             $productCollection = Mage::getResourceModel('catalog/product_collection')

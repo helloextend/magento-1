@@ -19,7 +19,7 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
             $warranty = $warrantyHelper->getWarrantyProduct();
             if (!$warranty) {
                 Mage::getSingleton('core/session')->addError('Oops! There was an error adding the protection plan product.');
-                Mage::getModel('warranty/logger')->error([], 'Oops! There was an error finding the protection pan product, please ensure the Extend protection plan product is in your catalog and is enabled!');
+                Mage::getModel('warranty/logger')->error('Oops! There was an error finding the protection pan product, please ensure the Extend protection plan product is in your catalog and is enabled!');
                 return;
             }
             $warranty = Mage::getModel('catalog/product')->load($warranty->getId());

@@ -16,7 +16,7 @@ class Extend_Warranty_Model_Observer_Quoteconverter
             $options = $orderItem->getProductOptions();
             $options['additional_options'] = $attributes;
             if($orderItem->getProduct()->getCustomOption('info_buyRequest')){
-                $options['info_buyRequest'] = json_decode($orderItem->getProduct()->getCustomOption('info_buyRequest')->getValue(), true);
+                $options['info_buyRequest'] = unserialize($orderItem->getProduct()->getCustomOption('info_buyRequest')->getValue());
             }
             $orderItem->setProductOptions($options);
         }

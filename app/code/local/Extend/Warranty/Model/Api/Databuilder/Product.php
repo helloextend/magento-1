@@ -13,12 +13,12 @@ class Extend_Warranty_Model_Api_Databuilder_Product
             $imgUrl = $productSubject->getImageUrl();
         } catch (Exception $e) {
             Mage::getModel('warranty/logger')->error(
+                $e->getMessage(),
                 [
                     'id'   => $productSubject->getId(),
                     'sku'  => $productSubject->getSku(),
                     'name' => $productSubject->getName(),
-                ],
-                $e->getMessage()
+                ]
             );
         }
 
