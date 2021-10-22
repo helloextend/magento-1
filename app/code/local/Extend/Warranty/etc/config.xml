@@ -80,16 +80,6 @@
         </events>
     </global>
     <admin>
-        <events>
-            <controller_action_layout_render_before_adminhtml_system_config_edit>
-                <observers>
-                    <warranty_update_layout_head>
-                        <class>warranty/observer_updatelayout</class>
-                        <method>execute</method>
-                    </warranty_update_layout_head>
-                </observers>
-            </controller_action_layout_render_before_adminhtml_system_config_edit>
-        </events>
         <routers>
             <adminhtml>
                 <args>
@@ -168,6 +158,16 @@
                 </extend_warranty>
             </updates>
         </layout>
+        <events>
+            <controller_action_layout_render_before>
+                <observers>
+                    <warranty_update_layout_head>
+                        <class>warranty/observer_updatelayout</class>
+                        <method>execute</method>
+                    </warranty_update_layout_head>
+                </observers>
+            </controller_action_layout_render_before>
+        </events>
     </adminhtml>
     <default>
         <warranty>

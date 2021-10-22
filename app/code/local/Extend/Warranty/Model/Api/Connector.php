@@ -76,7 +76,7 @@ class Extend_Warranty_Model_Api_Connector
     }
 
     /**
-     * @return Varien_Http_Client
+     * @return Zend_Http_Client
      * @throws Zend_Http_Client_Exception
      */
     protected function initClient()
