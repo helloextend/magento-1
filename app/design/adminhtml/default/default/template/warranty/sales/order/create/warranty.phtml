@@ -1,0 +1,45 @@
+<?php
+$_item = $this->getItem();
+$_product = $_item->getProduct();
+$helper = Mage::helper('warranty/connector');
+?>
+<?php if ($_product->getTypeId() !== 'warranty'): ?>
+    <?php if ($helper->isDisplayOffersEnabled()): ?>
+        <?php if (!$helper->hasWarranty($_product->getSku(), true)): ?>
+            <tbody id="warranty-<?= $_item->getId() ?>">
+            <tr>
+                <td colspan="7">
+                    <div id="extend-offer-<?= $_item->getId() ?>"></div>
+                </td>
+            </tr>
+            <script type="text/javascript">
+                Extend.config(<?php echo $helper->getJsonConfig()?>);
+                    Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
+                        referenceId: '<?= $_item->getSku() ?>',
+                        onAddToCart: function (opts) {
+                            const plan = opts.plan;
+                            if (plan) {
+                                let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
+                                let url      = "<?= $this->getUrl('adminhtml/warranty/add') ?>";
+                                plan.product = '<?= $_item->getSku() ?>';
+
+                                $j.get(url, {
+                                    warranty: plan,
+                                    option: parentId,
+                                   // form_key: window.FORM_KEY
+                                }).done(function (data) {
+                                    if (data.status == "success") {
+                                        order.productGridAddSelected('{products:{"<?php echo $_item->getId() ?>":1}}')
+                                      //  order.itemsUpdate();
+                                    } else {
+                                        console.log("Oops! There was an error adding the protection plan.");
+                                    }
+                                });
+                            }
+                        }
+                    });
+            </script>
+            </tbody>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>
