@@ -36,7 +36,8 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
         $baseUrl = $this->isLiveMode() ? self::LIVE_URL : self::SANDBOX_URL;
         $storeId = $this->getApiStoreId();
 
-        return rtrim($baseUrl, DS) . DS . 'stores' . DS . $storeId . DS . ltrim($endpoint, DS);
+        return stripos($endpoint, 'offers') === 0 ? $baseUrl . $endpoint
+            : rtrim($baseUrl, DS) . DS . 'stores' . DS . $storeId . DS . ltrim($endpoint, DS);
     }
 
     /**

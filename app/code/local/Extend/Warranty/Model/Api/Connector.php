@@ -57,10 +57,6 @@ class Extend_Warranty_Model_Api_Connector
                 );
         }
 
-        if (!$data) {
-            $data = 'Request Body is Empty';
-        }
-
         Mage::getModel('warranty/logger')->info('Request Data, Method: ' . $method . ', Endpoint URI: ' . $apiUri, $data, 'Request Body');
         $response = $client->request();
 

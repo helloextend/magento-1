@@ -13,6 +13,7 @@ $helper = Mage::helper('warranty/connector');
                 </td>
             </tr>
             <script type="text/javascript">
+                var $j = jQuery.noConflict();
                 Extend.config(<?php echo $helper->getJsonConfig()?>);
                     Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
                         referenceId: '<?= $_item->getSku() ?>',
@@ -26,7 +27,6 @@ $helper = Mage::helper('warranty/connector');
                                 $j.get(url, {
                                     warranty: plan,
                                     option: parentId,
-                                   // form_key: window.FORM_KEY
                                 }).done(function (data) {
                                     if (data.status == "success") {
                                         order.productGridAddSelected('{products:{"<?php echo $_item->getId() ?>":1}}')
