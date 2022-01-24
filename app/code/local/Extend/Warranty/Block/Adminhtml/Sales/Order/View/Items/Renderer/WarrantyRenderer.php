@@ -46,7 +46,7 @@ class Extend_Warranty_Block_Adminhtml_Sales_Order_View_Items_Renderer_WarrantyRe
         $contractID = json_decode($item->getContractId()) === NULL ? json_encode([$item->getContractId()]) : $item->getContractId();
         $_elements = count(json_decode($contractID, true));
 
-        return '{"refundWarranty": {"url": "' . $this->getUrl('extend/contract/refund') .
+        return '{"refundWarranty": {"url": "' . $this->getUrl('extend/refund') .
             '", "contractId": ' . $contractID .
             ', "isPartial": "' . $isPartial . '"' .
             ', "maxRefunds": "' . $_elements . '"' .

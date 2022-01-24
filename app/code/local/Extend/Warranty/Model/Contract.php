@@ -29,7 +29,7 @@ class Extend_Warranty_Model_Contract
 
                 if (!empty($contractId)) {
                     $items = $order->getAllItems();
-                    if (isset($items[$key]) && empty($items[$key]->getContractId())) {
+                    if (isset   ($items[$key]) && empty($items[$key]->getContractId())) {
                         $items[$key]->setContractId($contractId);
 
                         $options = $items[$key]->getProductOptions();
@@ -45,7 +45,33 @@ class Extend_Warranty_Model_Contract
                 }
             }
         } catch (Exception $e) {
-            Mage::getModel('warranty/logger')->error('Error while creating warranty contract',['message' => $e->getMessage()]);
+            Mage::getModel('warranty/logger')->error('Error while creating warranty contract', ['message' => $e->getMessage()]);
         }
+    }
+
+    public function refundContract($item, $contractId)
+    {
+    }
+
+    public function validateContractRefund($contractIds)
+    {
+        if (!is_array($contractIds)) {
+            $contractIds = [$contractIds];
+        }
+
+        $amountValidated = 0;
+//        if (!Mage::helper('warranty/connector')->isOrdersApiEnabled()) {
+        foreach ($contractIds as $_contractId) {
+            $_response = Mage::getModel('warranty/api_sync_contract_handler')->validateRefund($_contractId);
+            if (!empty($_response["refundAmount"]["amount"])) {
+                $amountValidated += $_response["refundAmount"]["amount"];
+            }
+        }
+//        }
+        //Cent to dollars
+        if ($amountValidated > 0) {
+            $amountValidated /= 100;
+        }
+        return $amountValidated;
     }
 }
