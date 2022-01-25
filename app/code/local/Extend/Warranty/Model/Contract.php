@@ -49,8 +49,50 @@ class Extend_Warranty_Model_Contract
         }
     }
 
-    public function refundContract($item, $contractId)
+    public function refundContract($item, $contractIds)
     {
+        if (!is_array($contractIds)) {
+            $contractIds = [$contractIds];
+        }
+
+        $currentContracts = json_decode($item->getContractId()) === NULL ?
+            [$item->getContractId()] : json_decode($item->getContractId(), true);
+
+        $success = true;
+
+        foreach ($contractIds as $_contractId) {
+            $refundResponse = Mage::getModel('warranty/api_sync_contract_handler')->refund($_contractId);
+
+            // Refunds log
+            $response_log[] = [
+                "contract_id" => $_contractId,
+                "response" => $refundResponse
+            ];
+
+            if ($refundResponse == true) {
+                if (($key = array_search($_contractId, $currentContracts)) !== false) {
+                    unset($currentContracts[$key]);
+                }
+            } else {
+                $success = false;
+            }
+        }
+
+        $options = $item->getProductOptions();
+        $response_log = empty($options['refund_responses_log']) ? [] : $options['refund_responses_log'];
+
+        //All contracts are refunded
+        $options['refund'] = false;
+        if (empty($currentContracts)) {
+            $options['refund'] = true;
+        }
+
+
+        $options['refund_responses_log'] = $response_log;
+        $item->setProductOptions($options);
+        $item->setContractId(json_encode($currentContracts));
+        $item->save();
+        return $success;
     }
 
     public function validateContractRefund($contractIds)
@@ -60,14 +102,14 @@ class Extend_Warranty_Model_Contract
         }
 
         $amountValidated = 0;
-//        if (!Mage::helper('warranty/connector')->isOrdersApiEnabled()) {
-        foreach ($contractIds as $_contractId) {
-            $_response = Mage::getModel('warranty/api_sync_contract_handler')->validateRefund($_contractId);
-            if (!empty($_response["refundAmount"]["amount"])) {
-                $amountValidated += $_response["refundAmount"]["amount"];
+        if (!Mage::helper('warranty/connector')->isOrdersApiEnabled()) {
+            foreach ($contractIds as $_contractId) {
+                $_response = Mage::getModel('warranty/api_sync_contract_handler')->validateRefund($_contractId);
+                if (!empty($_response["refundAmount"]["amount"])) {
+                    $amountValidated += $_response["refundAmount"]["amount"];
+                }
             }
         }
-//        }
         //Cent to dollars
         if ($amountValidated > 0) {
             $amountValidated /= 100;

@@ -52,39 +52,61 @@ class Extend_Warranty_Model_Order
      * @param Mage_Sales_Model_Order_Item $item
      * @return void
      */
-    public function refundContracts($item, $contractIds)
+    public function refundContract($item, $contractIds)
     {
         if (!is_array($contractIds)) {
             $contractIds = [$contractIds];
         }
 
-        $refundsHandler = Mage::getModel('warranty/api_sync_refunds_handler');
+        $refundsHandler = Mage::getModel('warranty/api_sync_refund_handler');
 
-        $result = [];
+        $refundResult = [];
         foreach ($contractIds as $contractId) {
-            $refundResult[$contractId] = $this->processResult($refundsHandler->refundContract($contractId));
+            $refundResult[$contractId] = $refundsHandler->refundContract($contractId);
         }
 
-        $this->processRefundResult($item, $refundResult);
-        return $result;
+        return $this->processRefundResult($item, $refundResult);
     }
 
+    /**
+     * @param $item
+     * @param $refundResult
+     * @return bool
+     */
     protected function processRefundResult($item, $refundResult)
     {
-        $currentContractId = $item->getContractId();
-        $currentLineItemId = $item->getExtendLineItemId();
+        $hasErrors = false;
+        $currentContracts = json_decode($item->getContractId()) === NULL ?
+            [$item->getContractId()] : json_decode($item->getContractId(), true);
 
         foreach ($refundResult as $result) {
             if ($result === false) {
+                $hasErrors = true;
                 continue;
             }
 
             if (isset($result['contractId'])) {
-
+                if (($key = array_search($result['contractId'], $currentContracts)) !== false) {
+                    unset($currentContracts[$key]);
+                }
             }
         }
-//        $item->setContractId();
-//        $item->setExtendLineItemId();
-//        $item->setProductOptions($options);
+        $options = $item->getProductOptions();
+
+        $response_log = empty($options['refund_responses_log']) ? [] : $options['refund_responses_log'];
+
+        //All contracts are refunded
+        $options['refund'] = false;
+        if (empty($currentContracts)) {
+            $options['refund'] = true;
+        }
+
+        $options['refund_responses_log'] = $response_log;
+
+        $item->setContractId(json_encode($currentContracts));
+        $item->setProductOptions($options);
+        $item->save();
+
+        return !$hasErrors;
     }
 }

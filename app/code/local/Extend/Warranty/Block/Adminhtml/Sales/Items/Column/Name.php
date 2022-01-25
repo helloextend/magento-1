@@ -19,7 +19,7 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Column_Name extends Mage_Admin
             "url" => $this->getUrl('adminhtml/extend_order/refund'),
             "contractId" => $contractID,
             "isPartial" => $isPartial,
-            "validate" => true,
+            "validate" => !Mage::helper('warranty/connector')->isOrdersApiEnabled(),
             "maxRefunds" => $_elements,
             "itemId" => $item->getId()
         ];
