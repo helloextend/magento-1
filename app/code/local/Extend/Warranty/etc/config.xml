@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Extend_Warranty>
-            <version>0.1.0</version>
+            <version>1.0.0</version>
         </Extend_Warranty>
     </modules>
     <global>
@@ -66,6 +66,14 @@
                         <class>warranty/observer_createcontract</class>
                         <method>execute</method>
                     </warranty_invoice_pay>
+                </observers>
+            </sales_order_invoice_pay>
+            <sales_order_invoice_pay>
+                <observers>
+                    <warranty_invoice_pay_order_create>
+                        <class>warranty/observer_syncorder</class>
+                        <method>execute</method>
+                    </warranty_invoice_pay_order_create>
                 </observers>
             </sales_order_invoice_pay>
             <sales_convert_quote_item_to_order_item>

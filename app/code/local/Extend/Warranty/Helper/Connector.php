@@ -11,12 +11,23 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     const XML_PATH_LIVE_STORE_ID = 'warranty/authentication/store_id';
     const XML_PATH_SANDBOX_API_KEY = 'warranty/authentication/sandbox_api_key';
     const XML_PATH_SANDBOX_STORE_ID = 'warranty/authentication/sandbox_store_id';
+    const XML_PATH_STORE_NAME = 'warranty/authentication/store_name';
     const XML_PATH_ENABLE_EXTEND = 'warranty/enableExtend/enable';
     const XML_PATH_ENABLE_BALANCE = 'warranty/enableExtend/enableBalance';
     const XML_PATH_ENABLE_CARTOFFERS = 'warranty/enableExtend/enableCartOffers';
     const XML_PATH_ENABLE_REFUNDS = 'warranty/enableExtend/enableRefunds';
     const DEMO = 'demo';
     const LIVE = 'live';
+
+    /**
+     * Orders API settings
+     */
+    const XML_PATH_WARRANTY_ENABLE_ORDERS_API = 'warranty/orders/enable';
+
+    /**
+     * Orders API settings
+     */
+    const XML_PATH_WARRANTY_ORDERS_API_CREATE_MODE = 'warranty/orders/order_create';
 
     /**
      * @var Mage_Core_Model_Store
@@ -36,8 +47,15 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
         $baseUrl = $this->isLiveMode() ? self::LIVE_URL : self::SANDBOX_URL;
         $storeId = $this->getApiStoreId();
 
-        return stripos($endpoint, 'offers') === 0 ? $baseUrl . $endpoint
-            : rtrim($baseUrl, DS) . DS . 'stores' . DS . $storeId . DS . ltrim($endpoint, DS);
+        if (stripos($endpoint, 'offers') !== false
+            || stripos($endpoint, 'orders') !== false
+        ) {
+            $endpointUrl = $baseUrl . $endpoint;
+        } else {
+            $endpointUrl = rtrim($baseUrl, DS) . DS . 'stores' . DS . $storeId . DS . ltrim($endpoint, DS);
+        }
+
+        return $endpointUrl;
     }
 
     /**
@@ -52,6 +70,14 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
 
         return $this->liveMode;
     }
+
+
+    public function getApiStoreName($store = null)
+    {
+        $store = $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_STORE_NAME, $store);
+    }
+
 
     /**
      * Retrieve Store object
@@ -172,7 +198,7 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     public function getJsonConfig()
     {
         $data = [
-            'storeId'     => $this->getApiStoreId(),
+            'storeId' => $this->getApiStoreId(),
             'environment' => $this->isLiveMode() ? self::LIVE : self::DEMO,
         ];
 
@@ -210,5 +236,41 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
         }
 
         return Mage::getSingleton('checkout/session')->getQuote();
+    }
+
+    /**
+     * @param $store
+     * @return mixed
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isOrdersApiEnabled($store = null)
+    {
+        $store = $store ?: $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_WARRANTY_ENABLE_ORDERS_API, $store);
+    }
+
+    /**
+     * @param $store
+     * @return mixed
+     */
+    public function getOrdersApiCreateMode($store = null)
+    {
+        $store = $store ?: $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_WARRANTY_ORDERS_API_CREATE_MODE, $store);
+    }
+
+    /**
+     * Generates unique request key
+     * @return string
+     */
+    public function getUuid4()
+    {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+        );
     }
 }

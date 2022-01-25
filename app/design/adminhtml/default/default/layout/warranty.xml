@@ -5,15 +5,15 @@
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/jquery-1.12.0.js</script>
-                <params />
-                <if />
+                <params/>
+                <if/>
                 <condition>is_enterprise</condition>
             </action>
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/jquery-1.12.1.js</script>
-                <params />
-                <if />
+                <params/>
+                <if/>
                 <condition>is_community</condition>
             </action>
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
@@ -87,6 +87,7 @@
                 <column>name</column>
                 <block>warranty/adminhtml_sales_items_column_name</block>
                 <template>warranty/sales/items/column/name.phtml</template>
+                <type>warranty</type>
             </action>
         </reference>
     </adminhtml_sales_order_view>

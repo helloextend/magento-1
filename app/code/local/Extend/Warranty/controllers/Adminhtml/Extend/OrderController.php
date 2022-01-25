@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see Extend_Warranty_Adminhtml_Extend_OrderController
- * @deprecated
- */
-class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Controller_Action
+class Extend_Warranty_Adminhtml_Extend_OrderController extends Mage_Adminhtml_Controller_Action
 {
     /**
      * @throws Zend_Controller_Response_Exception
@@ -25,34 +21,16 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
 
         $contractId = $this->getRequest()->getParam('contractId');
 
-        $itemId = (string)$this->getRequest()->getParam('itemId');
-        $item = Mage::getModel('sales/order_item')->load($itemId);
-
         $isValidationRequest = $this->getRequest()->getParam('validation');
 
         /* Validation Request */
         if ($isValidationRequest) {
-            $amountValidated = 0;
-            foreach ($contractId as $_contractId) {
-                $_response = Mage::getModel('warranty/api_sync_contract_handler')->validateRefund($_contractId);
-                if (!empty($_response["refundAmount"]["amount"])) {
-                    $amountValidated += $_response["refundAmount"]["amount"];
-                }
-            }
-
-            //Cent to dollars
-            if ($amountValidated > 0) {
-                $amountValidated /= 100;
-            }
-
-            $this->getResponse()->setHeader('Content-type', 'application/json');
-            $this->getResponse()->setBody(
-                Mage::helper('core')->jsonEncode(["amountValidated" => $amountValidated])
-            );
-            $this->getResponse()->setHttpResponseCode(200);
+            $this->validateContractsRefund($contractId);
             return;
         }
 
+        $itemId = (string)$this->getRequest()->getParam('itemId');
+        $item = Mage::getModel('sales/order_item')->load($itemId);
         $options = $item->getProductOptions();
         $response_log = empty($options['refund_responses_log']) ? [] : $options['refund_responses_log'];
 
@@ -62,6 +40,7 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
         $refundHadErrors = false;
 
         foreach ($contractId as $_contractId) {
+
             $refundResponse = Mage::getModel('warranty/api_sync_contract_handler')->refund($_contractId);
 
             // Refunds log
@@ -78,6 +57,7 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
                 $refundHadErrors = true;
             }
         }
+//        }
 
         //All contracts are refunded
         $options['refund'] = false;
@@ -95,5 +75,15 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
         $item->setProductOptions($options);
         $item->setContractId(json_encode($currentContracts));
         $item->save();
+    }
+
+    protected function validateContractsRefund($contractId)
+    {
+        $amountValidated = Mage::getModel('warranty/contract')->validateContractRefund($contractId);
+        $this->getResponse()->setHeader('Content-type', 'application/json');
+        $this->getResponse()->setBody(
+            Mage::helper('core')->jsonEncode(["amountValidated" => $amountValidated])
+        );
+        $this->getResponse()->setHttpResponseCode(200);
     }
 }
