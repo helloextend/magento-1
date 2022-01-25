@@ -31,50 +31,18 @@ class Extend_Warranty_Adminhtml_Extend_OrderController extends Mage_Adminhtml_Co
 
         $itemId = (string)$this->getRequest()->getParam('itemId');
         $item = Mage::getModel('sales/order_item')->load($itemId);
-        $options = $item->getProductOptions();
-        $response_log = empty($options['refund_responses_log']) ? [] : $options['refund_responses_log'];
 
-        $currentContracts = json_decode($item->getContractId()) === NULL ?
-            [$item->getContractId()] : json_decode($item->getContractId(), true);
-
-        $refundHadErrors = false;
-
-        foreach ($contractId as $_contractId) {
-
-            $refundResponse = Mage::getModel('warranty/api_sync_contract_handler')->refund($_contractId);
-
-            // Refunds log
-            $response_log[] = [
-                "contract_id" => $_contractId,
-                "response" => $refundResponse
-            ];
-
-            if ($refundResponse == true) {
-                if (($key = array_search($_contractId, $currentContracts)) !== false) {
-                    unset($currentContracts[$key]);
-                }
-            } else {
-                $refundHadErrors = true;
-            }
-        }
-//        }
-
-        //All contracts are refunded
-        $options['refund'] = false;
-        if (empty($currentContracts)) {
-            $options['refund'] = true;
+        if (Mage::helper('warranty/connector')->isOrdersApiEnabled()) {
+            $result = Mage::getModel('warranty/order')->refundContract($item, $contractId);
+        } else {
+            $result = Mage::getModel('warranty/contract')->refundContract($item, $contractId);
         }
 
         //At least one error return 500 error code
         $this->getResponse()->setHttpResponseCode(200);
-        if ($refundHadErrors) {
+        if ($result !== true) {
             $this->getResponse()->setHttpResponseCode(500);
         }
-
-        $options['refund_responses_log'] = $response_log;
-        $item->setProductOptions($options);
-        $item->setContractId(json_encode($currentContracts));
-        $item->save();
     }
 
     protected function validateContractsRefund($contractId)

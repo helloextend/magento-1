@@ -3,7 +3,7 @@
 class Extend_Warranty_Model_Api_Sync_Refund_Handler
 {
 
-    const ENDPOINT_URI = '/refunds';
+    const ENDPOINT_URI = 'refunds';
 
 
     public function refundLineItem($lineItemId)

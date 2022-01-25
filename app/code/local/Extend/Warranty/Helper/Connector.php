@@ -49,6 +49,7 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
 
         if (stripos($endpoint, 'offers') !== false
             || stripos($endpoint, 'orders') !== false
+            || stripos($endpoint, 'refunds') !== false
         ) {
             $endpointUrl = $baseUrl . $endpoint;
         } else {
