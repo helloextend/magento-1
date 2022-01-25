@@ -17,16 +17,9 @@ class Extend_Warranty_Model_Order
             $orderPayload = $orderDataBuilder->prepareInfo($order);
 
             $result = Mage::getModel('warranty/api_sync_orders_handler')->create($orderPayload);
-            if ($result['id']) {
-                $order->setExtendOrderId($result['id']);
-                $order->save();
-            }
 
             $lineItems = [];
             foreach ($result['lineItems'] as $lineItem) {
-                if (isset($lineItem['id']) && $lineItem['id']) {
-                    $lineItems[$lineItem['lineItemTransactionId']]['lineItemId'][] = $lineItem['id'];
-                }
                 if (isset($lineItem['contractId']) && $lineItem['contractId']) {
                     $lineItems[$lineItem['lineItemTransactionId']]['contractId'][] = $lineItem['contractId'];
                 }
@@ -41,9 +34,6 @@ class Extend_Warranty_Model_Order
                     }
 
                     $item->setProductOptions($options);
-                    if (isset($lineItems[$orderTransactionId]['contractId'])) {
-                        $item->setExtendLineItemId(json_encode($lineItems[$orderTransactionId]['lineItemId']));
-                    }
 
                     if (isset($lineItems[$orderTransactionId]['contractId'])) {
                         $item->setContractId(json_encode($lineItems[$orderTransactionId]['contractId']));
@@ -57,11 +47,6 @@ class Extend_Warranty_Model_Order
         }
     }
 
-
-    public function validateRefundContracts($contractIds)
-    {
-        $this->refundItem($contractIds, true);
-    }
 
     /**
      * @param Mage_Sales_Model_Order_Item $item

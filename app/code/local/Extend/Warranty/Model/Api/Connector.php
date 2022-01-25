@@ -2,7 +2,6 @@
 
 class Extend_Warranty_Model_Api_Connector
 {
-//    const API_VERSION = '2020-08-01';
     const API_VERSION = '2021-07-01';
 
     /**
@@ -85,22 +84,11 @@ class Extend_Warranty_Model_Api_Connector
                 'Accept' => ' application/json; version=' . self::API_VERSION,
                 'Content-Type' => ' application/json',
                 'X-Extend-Access-Token' => Mage::helper('warranty/connector')->getApiKey(),
-                'X-Idempotency-Key' => $this->getUuid4()
+                'X-Idempotency-Key' => Mage::helper('warranty/connector')->getUuid4()
             )
         );
         $client->setConfig(array('timeout' => 20));
 
         return $client;
-    }
-
-    protected function getUuid4()
-    {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-        );
     }
 }

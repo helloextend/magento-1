@@ -68,6 +68,10 @@ class Extend_Warranty_Helper_Api extends Mage_Core_Helper_Abstract
         return [];
     }
 
+    /**
+     * @param $warrantyData
+     * @return false|string
+     */
     public function getWarrantyDataAsString($warrantyData)
     {
         try {

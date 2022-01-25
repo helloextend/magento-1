@@ -249,9 +249,28 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_WARRANTY_ENABLE_ORDERS_API, $store);
     }
 
+    /**
+     * @param $store
+     * @return mixed
+     */
     public function getOrdersApiCreateMode($store = null)
     {
         $store = $store ?: $this->getStore();
         return Mage::getStoreConfig(self::XML_PATH_WARRANTY_ORDERS_API_CREATE_MODE, $store);
+    }
+
+    /**
+     * Generates unique request key
+     * @return string
+     */
+    public function getUuid4()
+    {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+        );
     }
 }

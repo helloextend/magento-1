@@ -2,6 +2,9 @@
 
 class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Controller_Action
 {
+    /**
+     * @return void
+     */
     public function addAction()
     {
         try {

@@ -11,8 +11,6 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Column_Name extends Mage_Admin
     {
         $contractID = json_decode($item->getContractId()) === NULL ? [$item->getContractId()] : json_decode($item->getContractId(), true);
 
-//        $lineItemId = json_decode($item->getExtendLineItemId()) === NULL ? [$item->getExtendLineItemId()] : json_decode($item->getExtendLineItemId(), true);
-
         $_elements = count($contractID);
 
         $isPartial = $this->canShowPartial($item);
@@ -20,7 +18,6 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Column_Name extends Mage_Admin
         $config = [
             "url" => $this->getUrl('adminhtml/extend_order/refund'),
             "contractId" => $contractID,
-//            "lineItemId" => $lineItemId,
             "isPartial" => $isPartial,
             "validate" => true,
             "maxRefunds" => $_elements,

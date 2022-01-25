@@ -28,9 +28,6 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
         $itemId = (string)$this->getRequest()->getParam('itemId');
         $item = Mage::getModel('sales/order_item')->load($itemId);
 
-//        $contractId = $item->getContractId();
-//        $extendLineItemId = $item->getExtendLineItemId();
-
         $isValidationRequest = $this->getRequest()->getParam('validation');
 
         /* Validation Request */

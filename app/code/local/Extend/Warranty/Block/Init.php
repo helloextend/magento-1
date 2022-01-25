@@ -3,6 +3,8 @@
 class Extend_Warranty_Block_Init extends Mage_Catalog_Block_Product_View
 {
     /**
+     * Returns configurable children as json
+     *
      * @return false|string
      */
     public function getChildProductsSku()

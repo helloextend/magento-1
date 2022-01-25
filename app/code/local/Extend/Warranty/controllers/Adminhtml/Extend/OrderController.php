@@ -21,9 +21,6 @@ class Extend_Warranty_Adminhtml_Extend_OrderController extends Mage_Adminhtml_Co
 
         $contractId = $this->getRequest()->getParam('contractId');
 
-//        $contractId = $item->getContractId();
-//        $extendLineItemId = $item->getExtendLineItemId();
-
         $isValidationRequest = $this->getRequest()->getParam('validation');
 
         /* Validation Request */
@@ -42,9 +39,6 @@ class Extend_Warranty_Adminhtml_Extend_OrderController extends Mage_Adminhtml_Co
 
         $refundHadErrors = false;
 
-//        if (Mage::helper('warranty/connector')->isOrderEnabled()) {
-//            Mage::getModel('warranty/order')->refundContract($item, $contractId);
-//        } else {
         foreach ($contractId as $_contractId) {
 
             $refundResponse = Mage::getModel('warranty/api_sync_contract_handler')->refund($_contractId);
