@@ -21,7 +21,7 @@ $helper = Mage::helper('warranty/connector');
                             const plan = opts.plan;
                             if (plan) {
                                 let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
-                                let url      = "<?= $this->getUrl('adminhtml/warranty/add') ?>";
+                                let url      = "<?= $this->getUrl('adminhtml/warranty/lead') ?>";
                                 plan.product = '<?= $_item->getSku() ?>';
 
                                 $j.get(url, {

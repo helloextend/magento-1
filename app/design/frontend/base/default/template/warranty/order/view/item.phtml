@@ -1,0 +1,60 @@
+<?php
+$connectorHelper = Mage::helper('warranty/connector');
+/** @var  $_item */
+$_item = $this->getParentBlock()->getItem();
+$product = $_item->getProduct();
+?>
+<?php if ($connectorHelper->isExtendEnabled() && $connectorHelper->isDisplayOffersEnabled()): ?>
+    <?php
+    $_itemID = '';
+    $productTypeInstance = $product->getTypeInstance();
+    if ($_item->getProductType() === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
+        foreach ($_item->getChildrenItems() as $child) {
+            if ($child->getLeadToken()) {
+                $_itemID = $child->getId();
+                $leadToken = $child->getLeadToken();
+            }
+        }
+    } elseif ($_item->getLeadToken()) {
+        $leadToken = $_item->getLeadToken();
+        $_itemID = $_item->getId();
+    }
+
+    $_itemID = empty($_itemID) ? $_item->getId() : $_itemID;
+    $_currentSku[$_itemID] = $_item->getSku();
+    ?>
+    <?php if ($leadToken): ?>
+        <div id="warranty-<?= $_item->getId() ?>">
+            <div id="extend-offer-<?= $_item->getId() ?>"></div>
+        </div>
+
+        <script>
+            Extend.config(<?php echo $connectorHelper->getJsonConfig()?>);
+        </script>
+        <script>
+            Extend.buttons.renderSimpleOffer(
+                '#extend-offer-' + <?= $_item->getId() ?>,
+                {
+                    referenceId: '<?= $_item->getSku() ?>',
+                    onAddToCart: function (opts) {
+                        const plan = opts.plan;
+                        let leadToken = '<?= $leadToken?>';
+
+                        if (plan) {
+                            plan.product = opts.product.id;
+                            plan.lead_token = leadToken;
+                            plan.qty = <?= (int)$_item->getQtyOrdered(); ?>;
+                            $j.post("<?php echo $this->getUrl('warranty/cart/leadAdd') ?>", {
+                                warranty: plan,
+                                option: "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>",
+                                form_key: "<?= Mage::getSingleton('core/session')->getFormKey();?>",
+                            }).done(function (data) {
+                                location.reload(false);
+                            });
+                        }
+                    }
+                }
+            );
+        </script>
+    <?php endif; ?>
+<?php endif; ?>

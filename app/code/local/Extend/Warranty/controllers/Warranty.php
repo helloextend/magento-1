@@ -14,16 +14,15 @@ class Extend_Warranty_Warranty extends Mage_Adminhtml_Controller_Action
             $quote = $this->_getSession()->getQuote();
 
             if (!$warranty) {
-                $data = ["status"=>"fail"];
+                $data = ["status" => "fail"];
+            } else {
+                $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
+                $quote->addProduct($warranty->getId(), $warrantyData);
+                $quote->collectTotals()->save();
+                $data = ["status" => "success"];
             }
-            $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
-            $quote->addProduct($warranty->getId(), $warrantyData);
-            $quote->collectTotals()->save();
-
-            $data = ["status"=>"success"];
-
         } catch (\Exception $e) {
-            $data = ["status"=>"fail"];
+            $data = ["status" => "fail"];
         }
 
         $this->getResponse()->setHeader('Content-type', 'application/json');

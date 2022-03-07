@@ -23,6 +23,9 @@ class Extend_Warranty_Model_Order
                 if (isset($lineItem['contractId']) && $lineItem['contractId']) {
                     $lineItems[$lineItem['lineItemTransactionId']]['contractId'][] = $lineItem['contractId'];
                 }
+                if (isset($lineItem['leadToken']) && $lineItem['leadToken']) {
+                    $lineItems[$lineItem['lineItemTransactionId']]['leadToken'] = $lineItem['leadToken'];
+                }
             }
 
             foreach ($order->getAllItems() as $item) {
@@ -31,12 +34,15 @@ class Extend_Warranty_Model_Order
                     if ($item->getProductType() == Extend_Warranty_Model_Product_Type::TYPE_CODE) {
                         $options = $item->getProductOptions();
                         $options = array_merge($options, ['refund' => false]);
+                        $item->setProductOptions($options);
                     }
-
-                    $item->setProductOptions($options);
 
                     if (isset($lineItems[$orderTransactionId]['contractId'])) {
                         $item->setContractId(json_encode($lineItems[$orderTransactionId]['contractId']));
+                    }
+
+                    if (isset($lineItems[$orderTransactionId]['leadToken'])) {
+                        $item->setLeadToken($lineItems[$orderTransactionId]['leadToken']);
                     }
                     $item->save();
                 }

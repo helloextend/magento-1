@@ -70,7 +70,11 @@ class Extend_Warranty_Model_Api_Databuilder_Order
         foreach ($warrantyItems as $productSku => $warranties) {
             foreach ($warranties as $warranty) {
                 $quantities[$productSku] -= $warranty->getQtyInvoiced();
-                $lineItems[] = $this->prepareLineItem($productItems[$productSku], $warranty->getQtyInvoiced(), $warranty);
+                if (isset($productItems[$productSku])) {
+                    $lineItems[] = $this->prepareLineItem($productItems[$productSku], $warranty->getQtyInvoiced(), $warranty);
+                } else {
+                    $lineItems[] = $this->prepareLineItem($warranty, $warranty->getQtyInvoiced(), $warranty);
+                }
             }
         }
 
@@ -121,8 +125,7 @@ class Extend_Warranty_Model_Api_Databuilder_Order
                 'countryCode' => Mage::getModel('directory/country')->load($billingCountryId)->getIso3Code(),
                 'postalCode' => $billingAddress->getPostcode(),
                 'province' => $billingAddress->getRegionCode() ? $billingAddress->getRegionCode() : ''
-            ],
-            'shippingAddress' => [],
+            ]
         ];
 
         $shippingAddress = $order->getShippingAddress();
@@ -172,7 +175,7 @@ class Extend_Warranty_Model_Api_Databuilder_Order
      *
      * Some products could have warranties only for a part of cart not for all qty
      *
-     * @param $orderItem
+     * @param Mage_Sales_Model_Order_Item $orderItem
      * @param $qty
      * @param null $warrantyItem
      * @return array
@@ -182,16 +185,20 @@ class Extend_Warranty_Model_Api_Databuilder_Order
     {
         /**
          * lineItemTransactionId field is using to connect lineItem from response with OrderItem
-         *
-         *
          **/
         $lineItem = [
             'status' => $this->getStatus($orderItem),
             'lineItemTransactionId' => $this->encodeId($orderItem->getId()),
             'quantity' => $qty,
             'storeId' => $this->getConnector()->getApiStoreId(),
+            'orderId' => $orderItem->getOrder()->getIncrementId(),
             'warrantable' => false
         ];
+
+        /*
+         *  @TODO: add logic to check if product has warranties on extend side and set         $lineItem['warrantable'] = true;
+         */
+        $lineItem['warrantable'] = true;
 
         if ($warrantyItem !== null) {
             /**
@@ -199,9 +206,15 @@ class Extend_Warranty_Model_Api_Databuilder_Order
              * So we will know that lineItemId and ContractId is goes to WarrantyItem.
              */
             $lineItem['lineItemTransactionId'] = $this->encodeId($warrantyItem->getId());
+
             $warrantyId = $warrantyItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::WARRANTY_ID);
             $term = $warrantyItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::TERM);
+            $leadToken = $warrantyItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN);
+            if ($leadToken) {
+                $lineItem['leadToken'] = $leadToken;
+            }
             $price = $warrantyItem->getBasePrice();
+
             if ($warrantyId && $term) {
                 $lineItem['warrantable'] = true;
                 $lineItem['plan'] = [
@@ -210,6 +223,7 @@ class Extend_Warranty_Model_Api_Databuilder_Order
                     "termsVersion" => $term,
                     "version" => ""
                 ];
+
             }
         }
 
@@ -234,10 +248,17 @@ class Extend_Warranty_Model_Api_Databuilder_Order
      */
     protected function prepareProduct($orderItem)
     {
-        $product = $orderItem->getProduct();
+        if ($orderItem->getProductType() == Extend_Warranty_Model_Product_Type::TYPE_CODE) {
+            $productSku = $orderItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT);
+            $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $productSku);
+        } else {
+            $productSku = $orderItem->getProduct()->getSku();
+            $product = $orderItem->getProduct();
+        }
+
         return [
-            'id' => $orderItem->getProduct()->getSku(),
-            'listPrice' => $this->getHelper()->formatPrice($orderItem->getFinalPrice()),
+            'id' => $productSku,
+            'listPrice' => $this->getHelper()->formatPrice($product->getFinalPrice()),
             'name' => $product->getName(),
             'purchasePrice' => $this->getHelper()->formatPrice($product->getFinalPrice())
         ];
