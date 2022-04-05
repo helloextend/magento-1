@@ -175,6 +175,14 @@
                     </warranty_update_layout_head>
                 </observers>
             </controller_action_layout_render_before>
+            <sales_order_creditmemo_refund>
+                <observers>
+                    <extend_warranty_creditmemo>
+                        <class>warranty/observer_warranty_refund</class>
+                        <method>execute</method>
+                    </extend_warranty_creditmemo>
+                </observers>
+            </sales_order_creditmemo_refund>
         </events>
     </adminhtml>
     <default>
