@@ -20,6 +20,13 @@ class Extend_Warranty_Model_Api_Sync_Refund_Handler
         return $this->refund($payload);
     }
 
+    public function refundOrder($orderId)
+    {
+        $payload = ['orderId' => $orderId];
+
+        return $this->refund($payload);
+    }
+
     /**
      * @param $payload
      * @return false|mixed
