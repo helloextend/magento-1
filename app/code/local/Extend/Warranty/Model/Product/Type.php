@@ -6,6 +6,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     const WARRANTY_ID = 'warranty_id';
     const ASSOCIATED_PRODUCT = 'associated_product';
     const TERM = 'warranty_term';
+    const LEAD_TOKEN = 'lead_token';
     const BUY_REQUEST = 'info_buyRequest';
     const TYPE_AFFILIATE = 'affilated';
     const XML_PATH_AUTHENTICATION = 'catalog/affilated/authentication';
@@ -59,6 +60,9 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         if ($term = $product->getCustomOption(self::TERM)) {
             $options[self::TERM] = $term->getValue();
         }
+        if ($leadToken = $product->getCustomOption(self::LEAD_TOKEN)) {
+            $options[self::LEAD_TOKEN] = $leadToken->getValue();
+        }
 
         return $options;
     }
@@ -71,7 +75,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     {
         $warrantyProperties = [
             self::ASSOCIATED_PRODUCT => 'Product',
-            self::TERM               => 'Term'
+            self::TERM => 'Term'
         ];
 
         $options = [];
@@ -110,6 +114,10 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         $product->addCustomOption(self::WARRANTY_ID, $buyRequest->getData('planId'));
         $product->addCustomOption(self::ASSOCIATED_PRODUCT, $buyRequest->getProduct());
         $product->addCustomOption(self::TERM, $buyRequest->getTerm());
+
+        if ($buyRequest->getData('leadToken')) {
+            $product->addCustomOption(self::LEAD_TOKEN, $buyRequest->getData('leadToken'));
+        }
         $product->addCustomOption(self::BUY_REQUEST, serialize($buyRequest->getData()));
 
         if ($this->_isStrictProcessMode($processMode)) {

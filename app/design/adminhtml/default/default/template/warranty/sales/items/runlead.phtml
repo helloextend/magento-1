@@ -1,0 +1,52 @@
+<?php
+$_item = $this->getItem();
+$leadToken = $this->getLeadToken($_item);
+$_product = $_item->getProduct();
+$helper = Mage::helper('warranty/connector');
+?>
+<tr>
+    <td>
+        <div id="extend-offer-<?= $_item->getId() ?>"></div>
+        <script type="text/javascript">
+            var $j = jQuery.noConflict();
+            Extend.config(<?php echo $helper->getJsonConfig()?>);
+            Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
+                referenceId: '<?= $_item->getSku() ?>',
+                onAddToCart: function (opts) {
+                    const plan = opts.plan;
+                    if (plan) {
+                        let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
+                        let url = "<?= $this->getUrl('adminhtml/warranty/lead') ?>";
+                        let order = "<?= $this->getOrder()->getId();?>";
+                        plan.product = '<?= $_item->getSku() ?>';
+                        plan.qty = "<?= $_item->getQtyOrdered(); ?>";
+                        plan.lead_token = "<?= $leadToken; ?>";
+
+                        $j.get(url, {
+                            order: order,
+                            warranty: plan
+                        }).done(function (data) {
+                            if (data.status == "success") {
+                                var url = data.redirect;
+                                console.log(url);
+                                window.location.href = url;
+                                //  order.itemsUpdate();
+                            } else {
+                                console.log("Oops! There was an error adding the protection plan.");
+                            }
+                        });
+                    }
+                }
+            });
+        </script>
+    </td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>

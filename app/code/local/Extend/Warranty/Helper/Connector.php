@@ -29,6 +29,17 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
      */
     const XML_PATH_WARRANTY_ORDERS_API_CREATE_MODE = 'warranty/orders/order_create';
 
+
+    /**
+     * Offers Leads Model Settings
+     */
+    const XML_PATH_WARRANTY_OFFERS_LEADS_MODEL_ENABLED = 'warranty/offers/leads_modal_enabled';
+
+    /**
+     * Offers Order Information Settings
+     */
+    const XML_PATH_WARRANTY_OFFERS_ORDER_OFFERS_ENABLED = 'warranty/offers/order_offers_enabled';
+
     /**
      * @var Mage_Core_Model_Store
      */
@@ -218,6 +229,7 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
             if (
                 $item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE
                 && $item->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $sku
+                && !$item->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN)
             ) {
                 return true;
             }
@@ -248,6 +260,28 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     {
         $store = $store ?: $this->getStore();
         return Mage::getStoreConfig(self::XML_PATH_WARRANTY_ENABLE_ORDERS_API, $store);
+    }
+
+    /**
+     * @param $store
+     * @return boolean
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isOffersLeadModalEnabled($store = null)
+    {
+        $store = $store ?: $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_WARRANTY_OFFERS_LEADS_MODEL_ENABLED, $store);
+    }
+
+    /**
+     * @param $store
+     * @return boolean
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function isOffersOrderOffersEnabled($store = null)
+    {
+        $store = $store ?: $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_WARRANTY_OFFERS_ORDER_OFFERS_ENABLED, $store);
     }
 
     /**

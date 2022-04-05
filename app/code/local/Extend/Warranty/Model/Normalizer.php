@@ -88,7 +88,10 @@ class Extend_Warranty_Model_Normalizer
      */
     private function isWarrantyQuoteItemMatch($warranty, $quoteItem)
     {
-        return $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $quoteItem->getSku()
-            && ($quoteItem->getProductType() == 'configurable' || is_null($quoteItem->getOptionByCode('parent_product_id')));
+        return
+            $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $quoteItem->getSku()
+            && ($quoteItem->getProductType() == 'configurable' || is_null($quoteItem->getOptionByCode('parent_product_id')))
+            && !$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN)
+            ;
     }
 }

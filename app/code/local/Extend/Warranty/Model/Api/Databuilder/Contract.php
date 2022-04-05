@@ -19,60 +19,66 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                 continue;
             }
 
-            foreach($order->getAllItems() as $item){
-                if($item->getSku() !== $productSku) {
+            foreach ($order->getAllItems() as $item) {
+                if ($item->getSku() !== $productSku) {
                     continue;
                 }
 
                 $product = $item->getProduct();
             }
 
+            if (!$product && $productSku) {
+                $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $productSku);
+            } else {
+                throw new Exception("Product is not found for $productSku");
+            }
+
             $billing = $order->getBillingAddress();
             $shipping = $order->getShippingAddress();
 
             $contracts[$key] = [
-                'transactionId'    => $order->getIncrementId(),
+                'transactionId' => $order->getIncrementId(),
                 'transactionTotal' => [
                     "currencyCode" => "USD",
-                    "amount"       => Mage::helper('warranty')->formatPrice($order->getGrandTotal())
+                    "amount" => Mage::helper('warranty')->formatPrice($order->getGrandTotal())
                 ],
-                'customer'         => [
-                    'phone'           => $billing->getTelephone(),
-                    'email'           => $order->getCustomerEmail(),
-                    'name'            => $order->getCustomerName(),
-                    'billingAddress'  => [
-                        "postalCode"  => $billing->getPostcode(),
-                        "city"        => $billing->getCity(),
+                'customer' => [
+                    'phone' => $billing->getTelephone(),
+                    'email' => $order->getCustomerEmail(),
+                    'name' => $order->getCustomerName(),
+                    'billingAddress' => [
+                        "postalCode" => $billing->getPostcode(),
+                        "city" => $billing->getCity(),
                         "countryCode" => Mage::getModel('directory/country')->load($billing->getCountryId())->getIso3Code(),
-                        "region"      => $billing->getRegion()
+                        "region" => $billing->getRegion()
                     ],
-                    'shippingAddress' => [
-                        "postalCode"  => $shipping->getPostcode(),
-                        "city"        => $shipping->getCity(),
+                    'shippingAddress' => $shipping ? [
+                        "postalCode" => $shipping->getPostcode(),
+                        "city" => $shipping->getCity(),
                         "countryCode" => Mage::getModel('directory/country')->load($shipping->getCountryId())->getIso3Code(),
-                        "region"      => $shipping->getRegion()
-                    ]
+                        "region" => $shipping->getRegion()
+                    ] : []
                 ],
-                'product'          => [
-                    'referenceId'   => $product->getSku(),
+                'product' => [
+                    'referenceId' => $product->getSku(),
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount"       => Mage::helper('warranty')->formatPrice($product->getFinalPrice()),
+                        "amount" => Mage::helper('warranty')->formatPrice($product->getFinalPrice()),
                     ],
-                    'title'         => $product->getName(),
-                    'qty'           => (int)$warranty->getQtyOrdered()
+                    'title' => $product->getName(),
+                    'qty' => (int)$warranty->getQtyOrdered()
                 ],
-                'currency'         => Mage::app()->getStore()->getCurrentCurrencyCode(),
-                'transactionDate'  => $order->getCreatedAt() ? strtotime($order->getCreatedAt()) : strtotime('now'),
-                'source'           => [
+                'currency' => Mage::app()->getStore()->getCurrentCurrencyCode(),
+                'transactionDate' => $order->getCreatedAt() ? strtotime($order->getCreatedAt()) : strtotime('now'),
+                'source' => [
                     "platform" => "magento"
                 ],
-                'plan'             => [
+                'plan' => [
                     'purchasePrice' => [
                         "currencyCode" => "USD",
-                        "amount"       => Mage::helper('warranty')->formatPrice($warranty->getPrice()),
+                        "amount" => Mage::helper('warranty')->formatPrice($warranty->getPrice()),
                     ],
-                    'planId'        => $warrantyId
+                    'planId' => $warrantyId
                 ]
             ];
 
@@ -84,13 +90,15 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                 $billingFormat
             );
 
-            $shippingStreet = $shipping->getStreet();
-            $shippingFormat = $this->formatStreet($shippingStreet);
+            if ($shipping) {
+                $shippingStreet = $shipping->getStreet();
+                $shippingFormat = $this->formatStreet($shippingStreet);
 
-            $contracts[$key]['customer']['shippingAddress'] = array_merge(
-                $contracts[$key]['customer']['shippingAddress'],
-                $shippingFormat
-            );
+                $contracts[$key]['customer']['shippingAddress'] = array_merge(
+                    $contracts[$key]['customer']['shippingAddress'],
+                    $shippingFormat
+                );
+            }
 
             if (!$order->getCustomerIsGuest()) {
                 $contracts[$key]['customer']['customerId'] = $order->getCustomerId();

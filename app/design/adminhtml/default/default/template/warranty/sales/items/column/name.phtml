@@ -90,8 +90,10 @@
                     <strong><?= $this->escapeHtml($_refunded) ?></strong>
                 </span>
             <?php endif; ?>
-            <br/><span><?= $this->escapeHtml(__('Plan ID')) ?>: </span><?= $_planId ?>
-
+            <br/><span><?= $this->escapeHtml(__('Plan ID')) ?>: </span><?= $this->escapeHtml($_planId); ?>
+            <?php if (isset($_productOptions['lead_token']) && $leadToken = $_productOptions['lead_token']): ?>
+                <br/><span><?= $this->escapeHtml(__('Lead Token')) ?>: </span><?= $this->escapeHtml($leadToken); ?>
+            <?php endif; ?>
             <?php
             if (
                 Mage::helper('warranty/connector')->isRefundEnabled()
