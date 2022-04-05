@@ -115,8 +115,8 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         $product->addCustomOption(self::ASSOCIATED_PRODUCT, $buyRequest->getProduct());
         $product->addCustomOption(self::TERM, $buyRequest->getTerm());
 
-        if ($buyRequest->getLeadToken()) {
-            $product->addCustomOption(self::LEAD_TOKEN, $buyRequest->getLeadToken());
+        if ($buyRequest->getData('leadToken')) {
+            $product->addCustomOption(self::LEAD_TOKEN, $buyRequest->getData('leadToken'));
         }
         $product->addCustomOption(self::BUY_REQUEST, serialize($buyRequest->getData()));
 

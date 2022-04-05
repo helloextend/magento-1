@@ -8,10 +8,7 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Lead extends Mage_Adminhtml_Bl
 
     public function getItem()
     {
-        if ($this->getData('item') === null) {
-            $this->setItem($this->getParentBlock()->getItem());
-        }
-        return $this->getData('item');
+        return $this->getParentBlock()->getItem();
     }
 
     public function getOrder()
@@ -24,12 +21,14 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Lead extends Mage_Adminhtml_Bl
         if ($_item->getProductType() === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
             foreach ($_item->getChildrenItems() as $child) {
                 if ($child->getLeadToken()) {
-                    $leadToken = $child->getLeadToken();
+                    $leadTokenJson = $child->getLeadToken();
                 }
             }
         } elseif ($_item->getLeadToken()) {
-            $leadToken = $_item->getLeadToken();
+            $leadTokenJson = $_item->getLeadToken();
         }
+        $leadTokens = json_decode($leadTokenJson, true);
+        $leadToken = is_array($leadTokens) ? reset($leadTokens) : $leadTokens;
         return $leadToken;
     }
 

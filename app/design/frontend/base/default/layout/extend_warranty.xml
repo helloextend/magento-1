@@ -7,6 +7,20 @@
             </action>
         </reference>
     </default>
+    <cms_index_index>
+        <reference name="head">
+            <block type="core/text" name="extend.sdk.client">
+                <action method="setText" ifconfig="warranty/enableExtend/enable">
+                    <text>
+                        <![CDATA[<script src="https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js"></script>]]>
+                    </text>
+                </action>
+            </block>
+        </reference>
+        <reference name="content">
+            <block type="warranty/lead" name="extend.warranty.lead" after="-" template="warranty/lead-warranty.phtml"/>
+        </reference>
+    </cms_index_index>
     <catalog_product_view>
         <reference name="head">
             <block type="core/text" name="extend.sdk.client">
@@ -55,7 +69,7 @@
             </block>
         </reference>
         <block type="core/text_list" name="additional.product.info" translate="label">
-            <block type="core/template" name="warranty_lead" template="warranty/order/view/item.phtml"/>
+            <block type="warranty/sales_order_view_lead" name="warranty_lead" template="warranty/order/view/item.phtml"/>
         </block>
         <!--        <reference name="my.account.wrapper">-->
         <!--            <block type="sales/order_view" name="sales.order.view">-->

@@ -1,26 +1,18 @@
 <?php
+/** @var Extend_Warranty_Block_Sales_Order_View_Lead $this */
+
+/** @var \Extend_Warranty_Helper_Connector $connectorHelper */
 $connectorHelper = Mage::helper('warranty/connector');
 /** @var  $_item */
 $_item = $this->getParentBlock()->getItem();
 $product = $_item->getProduct();
 ?>
-<?php if ($connectorHelper->isExtendEnabled() && $connectorHelper->isDisplayOffersEnabled()): ?>
+<?php if ($connectorHelper->isExtendEnabled() && $connectorHelper->isOffersOrderOffersEnabled()): ?>
     <?php
     $_itemID = '';
     $productTypeInstance = $product->getTypeInstance();
-    if ($_item->getProductType() === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
-        foreach ($_item->getChildrenItems() as $child) {
-            if ($child->getLeadToken()) {
-                $_itemID = $child->getId();
-                $leadToken = $child->getLeadToken();
-            }
-        }
-    } elseif ($_item->getLeadToken()) {
-        $leadToken = $_item->getLeadToken();
-        $_itemID = $_item->getId();
-    }
-
-    $_itemID = empty($_itemID) ? $_item->getId() : $_itemID;
+    $leadToken = $this->getLeadToken($_item);
+    $_itemID = $this->getLeadItemId($_item);
     $_currentSku[$_itemID] = $_item->getSku();
     ?>
     <?php if ($leadToken): ?>

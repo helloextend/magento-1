@@ -24,7 +24,7 @@ class Extend_Warranty_Model_Order
                     $lineItems[$lineItem['lineItemTransactionId']]['contractId'][] = $lineItem['contractId'];
                 }
                 if (isset($lineItem['leadToken']) && $lineItem['leadToken']) {
-                    $lineItems[$lineItem['lineItemTransactionId']]['leadToken'] = $lineItem['leadToken'];
+                    $lineItems[$lineItem['lineItemTransactionId']]['leadToken'][$lineItem['leadToken']] = $lineItem['leadToken'];
                 }
             }
 
@@ -42,7 +42,7 @@ class Extend_Warranty_Model_Order
                     }
 
                     if (isset($lineItems[$orderTransactionId]['leadToken'])) {
-                        $item->setLeadToken($lineItems[$orderTransactionId]['leadToken']);
+                        $item->setLeadToken(json_encode(array_values($lineItems[$orderTransactionId]['leadToken'])));
                     }
                     $item->save();
                 }
