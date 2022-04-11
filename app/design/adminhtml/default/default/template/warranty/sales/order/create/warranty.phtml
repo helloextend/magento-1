@@ -30,7 +30,6 @@ $helper = Mage::helper('warranty/connector');
                                 }).done(function (data) {
                                     if (data.status == "success") {
                                         order.productGridAddSelected('{products:{"<?php echo $_item->getId() ?>":1}}')
-                                      //  order.itemsUpdate();
                                     } else {
                                         console.log("Oops! There was an error adding the protection plan.");
                                     }

@@ -52,7 +52,7 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
                 $price = $warrantyHelper->removeFormatPrice($warrantyData->getPrice());
 
                 /** @var Mage_Sales_Model_Quote $quote */
-                $quote = Mage::getModel('sales/quote');
+                $quote = $this->_getSession()->getQuote();
 
                 $customer = $this->getCustomer($orderInit->getCustomerEmail(), $orderInit->getStore());
                 if (!$customer) {
@@ -81,7 +81,11 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
                 $quote->setStore($orderInit->getStore());
                 $quote->assignCustomer($customer);
                 $quote->getBillingAddress()->addData($billingAddress);
-                $quote->addProduct($warranty, $warrantyData);
+                $quote->addProductAdvanced(
+                    $warranty,
+                    $warrantyData,
+                    Mage_Catalog_Model_Product_Type_Abstract::PROCESS_MODE_FULL
+                );
 
                 $item = $quote->getItemByProduct($warranty);
                 $item->setCustomPrice($price);
@@ -89,15 +93,10 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
                 $item->getProduct()->setIsSuperMode(true);
                 $quote->getPayment()->importData(['method' => $orderInit->getPayment()->getMethod()]);
                 $quote->collectTotals();
+                $quote->setIsActive(0);
                 $quote->save();
-
-                $service = Mage::getModel('sales/service_quote', $quote);
-                /** @var Mage_Sales_Model_Order $order */
-                $order = $service->submit();
-
-                Mage::dispatchEvent('checkout_submit_all_after', array('order' => $order, 'quote' => $quote));
-
-                $data = ["status" => "success", "redirect" => $this->getUrl('adminhtml/sales_order/view/', ['order_id' => $order->getId()])];
+                $this->_getOrderCreateModel()->saveQuote();
+                $data = ["status" => "success", "redirect" => $this->getUrl('adminhtml/sales_order_create/index/')];
             }
         } catch (Exception $e) {
             $data = ["status" => "fail"];
