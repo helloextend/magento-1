@@ -13,6 +13,10 @@ $helper = Mage::helper('warranty/connector');
             Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
                 referenceId: '<?= $_item->getSku() ?>',
                 onAddToCart: function (opts) {
+                    $j('body').append('<div id="contract_window_mask" class="popup-window-mask" style="display: none;"></div>')
+                    $j("#contract_window_mask").show();
+                    $j("#contract_window_mask").height($j(document).height());
+                    $j("#loading-mask").show();
                     const plan = opts.plan;
                     if (plan) {
                         let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
@@ -27,11 +31,14 @@ $helper = Mage::helper('warranty/connector');
                             warranty: plan
                         }).done(function (data) {
                             if (data.status == "success") {
+                                $j("#contract_window_mask").remove();
+                                $j("#loading-mask").hide();
                                 var url = data.redirect;
                                 console.log(url);
                                 window.location.href = url;
-                                //  order.itemsUpdate();
                             } else {
+                                $j("#contract_window_mask").remove();
+                                $j("#loading-mask").hide();
                                 console.log("Oops! There was an error adding the protection plan.");
                             }
                         });

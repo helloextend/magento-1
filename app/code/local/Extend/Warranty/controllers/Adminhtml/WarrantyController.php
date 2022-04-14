@@ -50,23 +50,22 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
                 $orderInit = Mage::getModel('sales/order')->load($orderId);
 
                 $price = $warrantyHelper->removeFormatPrice($warrantyData->getPrice());
-
-                /** @var Mage_Sales_Model_Quote $quote */
-                $quote = $this->_getSession()->getQuote();
-
                 $customer = $this->getCustomer($orderInit->getCustomerEmail(), $orderInit->getStore());
+                $store = $orderInit->getStore();
+                $this->getQuoteSession()->setStoreId($store->getId());
+
                 if (!$customer) {
                     $customer = Mage::getModel('customer/customer');
                     $customer->setFirstname($orderInit->getCustomerFirstname())
                         ->setLastname($orderInit->getCustomerLastname())
                         ->setEmail($orderInit->getCustomerEmail());
-                    $quote->setCustomerIsGuest(true);
                     $customer->save();
                 } else {
                     $this->getQuoteSession()->setCustomerId($customer->getId());
                 }
-                $store = $orderInit->getStore();
-                $this->getQuoteSession()->setStoreId($store->getId());
+
+                /** @var Mage_Sales_Model_Quote $quote */
+                $quote = $this->getQuoteSession()->getQuote();
 
                 $billingAddress = [
                     'firstname' => $orderInit->getCustomerFirstname(),
@@ -95,7 +94,11 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
                 $quote->collectTotals();
                 $quote->setIsActive(0);
                 $quote->save();
-                $this->_getOrderCreateModel()->saveQuote();
+
+                $this->_getOrderCreateModel()
+                    ->setQuote($quote)
+                    ->saveQuote();
+                $this->getQuoteSession()->setQuoteId($quote->getId());
                 $data = ["status" => "success", "redirect" => $this->getUrl('adminhtml/sales_order_create/index/')];
             }
         } catch (Exception $e) {
@@ -120,10 +123,10 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
     /**
      * @return Mage_Adminhtml_Model_Session|Mage_Core_Model_Abstract|null
      */
-    protected function _getSession()
-    {
-        return Mage::getSingleton('adminhtml/session_quote');
-    }
+//    protected function _getSession()
+//    {
+//        return Mage::getSingleton('adminhtml/session_quote');
+//    }
 
     /**
      * @return Mage_Adminhtml_Model_Sales_Order_Create
@@ -133,6 +136,9 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
         return Mage::getSingleton('adminhtml/sales_order_create');
     }
 
+    /**
+     * @return Mage_Adminhtml_Model_Session_Quote
+     */
     protected function getQuoteSession()
     {
         return Mage::getSingleton('adminhtml/session_quote');
