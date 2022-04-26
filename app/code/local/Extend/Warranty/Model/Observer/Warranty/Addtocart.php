@@ -14,6 +14,13 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
         $qty = $request->getPost('qty');
         $warrantyData = $request->getPost('warranty');
         $warrantyHelper = Mage::helper('warranty');
+
+        $product = $observer->getProduct();
+
+        if($request->getPost('bundle_option') && $product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE){
+            $warrantyData['dynamic_sku'] = $warrantyHelper->getComplexProductSku($product);
+        }
+
         $price = $warrantyHelper->removeFormatPrice($warrantyData['price']);
 
         if (!empty($warrantyData)) {

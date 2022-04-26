@@ -51,4 +51,47 @@ class Extend_Warranty_Helper_Data extends Mage_Core_Helper_Abstract
 
         return $productCollection->getFirstItem();
     }
+
+
+    /**
+     * @param $product
+     * @return mixed
+     */
+    public function getComplexProductSku($product)
+    {
+        $product = clone $product;
+        $product->setData('sku_type', 0);
+        return $product->getSku();
+    }
+
+    /**
+     * @param $quoteItem
+     * @return mixed
+     */
+    public function getComplexQuoteItemSku($quoteItem)
+    {
+        return $this->getComplexProductSku($quoteItem->getProduct());
+    }
+
+    /**
+     * @param $orderItem
+     * @return mixed
+     */
+    public function getComplexOrderItemSku($orderItem)
+    {
+        if ($orderItem->getProduct()->getTypeId() != 'bundle') {
+            return $orderItem->getSku();
+        }
+
+        $product = $orderItem->getProduct();
+
+        $saleableCheckBuffer = Mage::helper('catalog/product')->getSkipSaleableCheck();
+        Mage::helper('catalog/product')->setSkipSaleableCheck(true);
+
+        $product->getTypeInstance()->processConfiguration($orderItem->getBuyRequest(), $product);
+        $complexSku = $this->getComplexProductSku($product);
+
+        Mage::helper('catalog/product')->setSkipSaleableCheck($saleableCheckBuffer);
+        return $complexSku;
+    }
 }

@@ -30,7 +30,6 @@ $product = $_item->getProduct();
 $isVisibleProduct = $_item->getProduct()->isVisibleInSiteVisibility();
 $canApplyMsrp = Mage::helper('catalog')->canApplyMsrp($_item->getProduct(), Mage_Catalog_Model_Product_Attribute_Source_Msrp_Type::TYPE_BEFORE_ORDER_CONFIRM);
 $_params = $this->escapeHtml(json_encode(array('form_key' => $this->getFormKey())));
-$connectorHelper = Mage::helper('warranty/connector');
 ?>
 <tr>
     <td class="product-cart-image">
@@ -71,7 +70,7 @@ $connectorHelper = Mage::helper('warranty/connector');
                 <?php echo $this->escapeHtml($this->getProductName()) ?>
             <?php endif; ?>
         </h2>
-        <div class="product-cart-sku">
+        <div class="product-cart-sku warranty">
             <span class="label"><?php echo $this->__('SKU'); ?>:</span> <?php echo $this->escapeHtml($_item->getSku()); ?>
         </div>
         <?php if ($_options = $this->getOptionList()): ?>
@@ -326,6 +325,11 @@ $connectorHelper = Mage::helper('warranty/connector');
         </a>
     </td>
 </tr>
+<?php
+$connectorHelper = Mage::helper('warranty/connector');
+/** @var Extend_Warranty_Helper_Data $warrantyHelper */
+$warrantyHelper = Mage::helper('warranty');
+?>
 <?php if ($connectorHelper->isExtendEnabled() && $connectorHelper->isDisplayOffersEnabled()): ?>
     <?php
     $_itemID = '';
@@ -342,7 +346,7 @@ $connectorHelper = Mage::helper('warranty/connector');
     $_itemID = empty($_itemID) ? $_item->getId() : $_itemID;
     $_currentSku[$_itemID] = $product->getSku();
     ?>
-    <?php if (!$connectorHelper->hasWarranty($_currentSku[$_itemID])): ?>
+    <?php if (!$connectorHelper->productHasWarranty($_item->getProduct())): ?>
         <tr>
             <td colspan="6">
                 <table>
@@ -363,10 +367,14 @@ $connectorHelper = Mage::helper('warranty/connector');
             Extend.buttons.renderSimpleOffer(
                 '#extend-offer-' + <?= $_item->getId() ?>,
                 {
-                    referenceId: '<?= $_item->getSku() ?>',
+                    referenceId: '<?= $_currentSku[$_itemID] ?>',
                     onAddToCart: function (opts) {
                         const plan = opts.plan;
                         if (plan) {
+                            <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>
+                                plan.dynamic_sku = "<?= $warrantyHelper->getComplexQuoteItemSku($_item);?>";
+                            <?php endif;?>
+
                             plan.product = opts.product.id;
                             $j.post("<?php echo $this->getUrl('warranty/cart/add') ?>", {
                                 warranty: plan,

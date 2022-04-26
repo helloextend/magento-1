@@ -11,8 +11,16 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
     public function prepareInfo($order, $warranties)
     {
         $contracts = [];
+        $warrantyHelper = Mage::helper('warranty');
         foreach ($warranties as $key => $warranty) {
             $productSku = $warranty->getProductOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT);
+            $dynamicSku = $warranty->getProductOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU);
+
+            $associatedSku = [$productSku];
+            if ($dynamicSku) {
+                $associatedSku[] = $dynamicSku;
+            }
+
             $warrantyId = $warranty->getProductOptionByCode(Extend_Warranty_Model_Product_Type::WARRANTY_ID);
 
             if (empty($productSku) || empty($warrantyId)) {
@@ -20,11 +28,16 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
             }
 
             foreach ($order->getAllItems() as $item) {
-                if ($item->getSku() !== $productSku) {
-                    continue;
+                $itemSku = $warrantyHelper->getComplexOrderItemSku($item);
+                if (in_array($itemSku, $associatedSku)) {
+                    $quoteItem = $item;
+                    $product = $item->getProduct();
                 }
+            }
 
-                $product = $item->getProduct();
+            //No related warrantable items were found
+            if (!$product || !$quoteItem) {
+                continue;
             }
 
             if (!$product && $productSku) {
@@ -60,7 +73,7 @@ class Extend_Warranty_Model_Api_Databuilder_Contract
                     ] : []
                 ],
                 'product' => [
-                    'referenceId' => $product->getSku(),
+                    'referenceId' => $productSku,
                     'purchasePrice' => [
                         "currencyCode" => "USD",
                         "amount" => Mage::helper('warranty')->formatPrice($product->getFinalPrice()),
