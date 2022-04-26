@@ -2,10 +2,12 @@
 $_item = $this->getItem();
 $_product = $_item->getProduct();
 $helper = Mage::helper('warranty/connector');
+/** @var Extend_Warranty_Helper_Data $warrantyHelper */
+$warrantyHelper = Mage::helper('warranty');
 ?>
 <?php if ($_product->getTypeId() !== 'warranty'): ?>
     <?php if ($helper->isDisplayOffersEnabled()): ?>
-        <?php if (!$helper->hasWarranty($_product->getSku(), true)): ?>
+        <?php if (!$helper->productHasWarranty($_product->getSku(), true)): ?>
             <tbody id="warranty-<?= $_item->getId() ?>">
             <tr>
                 <td colspan="7">
@@ -16,13 +18,17 @@ $helper = Mage::helper('warranty/connector');
                 var $j = jQuery.noConflict();
                 Extend.config(<?php echo $helper->getJsonConfig()?>);
                     Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
-                        referenceId: '<?= $_item->getSku() ?>',
+                        referenceId: '<?= $_product->getData('sku') ?>',
                         onAddToCart: function (opts) {
                             const plan = opts.plan;
                             if (plan) {
                                 let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
                                 let url      = "<?= $this->getUrl('adminhtml/warranty/lead') ?>";
-                                plan.product = '<?= $_item->getSku() ?>';
+                                plan.product = '<?= $_product->getData('sku') ?>';
+
+                                <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>
+                                    plan.dynamic_sku = "<?= $warrantyHelper->getComplexProductSku($_product);?>";
+                                <?php endif;?>
 
                                 $j.get(url, {
                                     warranty: plan,

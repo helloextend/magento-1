@@ -88,10 +88,18 @@ class Extend_Warranty_Model_Normalizer
      */
     private function isWarrantyQuoteItemMatch($warranty, $quoteItem)
     {
+        $associatedSku = [$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue()];
+
+        if ($warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)) {
+            // case when product is bundle with dynamic sku
+            $associatedSku[] = $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)->getValue();
+        }
+
+        $warrantyHelper = Mage::helper('warranty');
+
         return
-            $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $quoteItem->getSku()
+            in_array($warrantyHelper->getComplexQuoteItemSku($quoteItem), $associatedSku)
             && ($quoteItem->getProductType() == 'configurable' || is_null($quoteItem->getOptionByCode('parent_product_id')))
-            && !$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN)
-            ;
+            && !$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN);
     }
 }

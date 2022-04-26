@@ -226,16 +226,31 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     {
         $quote = $this->getCurrentQuote($fromAdmin);
         foreach ($quote->getAllVisibleItems() as $item) {
-            if (
-                $item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE
-                && $item->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $sku
-                && !$item->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN)
-            ) {
+            if ($item->getProductType() !== Extend_Warranty_Model_Product_Type::TYPE_CODE) {
+                continue;
+            }
+            $associatedSku = [$item->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue()];
+
+            if ($item->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)) {
+                $associatedSku[] = $item->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)->getValue();
+            }
+
+            if (in_array($sku, $associatedSku)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param $product
+     * @param false $fromAdmin
+     */
+    public function productHasWarranty($product, $fromAdmin = false)
+    {
+        $warrantyHelper = Mage::helper('warranty');
+        return $this->hasWarranty($warrantyHelper->getComplexProductSku($product), $fromAdmin);
     }
 
     /**
