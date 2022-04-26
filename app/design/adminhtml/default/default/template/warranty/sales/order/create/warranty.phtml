@@ -7,7 +7,7 @@ $warrantyHelper = Mage::helper('warranty');
 ?>
 <?php if ($_product->getTypeId() !== 'warranty'): ?>
     <?php if ($helper->isDisplayOffersEnabled()): ?>
-        <?php if (!$helper->productHasWarranty($_product->getSku(), true)): ?>
+        <?php if (!$helper->productHasWarranty($_product, true)): ?>
             <tbody id="warranty-<?= $_item->getId() ?>">
             <tr>
                 <td colspan="7">
@@ -23,7 +23,7 @@ $warrantyHelper = Mage::helper('warranty');
                             const plan = opts.plan;
                             if (plan) {
                                 let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
-                                let url      = "<?= $this->getUrl('adminhtml/warranty/lead') ?>";
+                                let url      = "<?= $this->getUrl('adminhtml/warranty/add') ?>";
                                 plan.product = '<?= $_product->getData('sku') ?>';
 
                                 <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>

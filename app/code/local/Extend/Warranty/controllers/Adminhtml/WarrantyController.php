@@ -10,7 +10,7 @@ class Extend_Warranty_Adminhtml_WarrantyController extends Mage_Adminhtml_Contro
         try {
             $warranty = Mage::helper('warranty')->getWarrantyProduct();
             $warrantyData = new Varien_Object($this->getRequest()->getParam('warranty'));
-            $quote = $this->_getSession()->getQuote();
+            $quote = $this->getQuoteSession()->getQuote();
             if (!$warranty) {
                 $data = ["status" => "fail"];
             } else {
