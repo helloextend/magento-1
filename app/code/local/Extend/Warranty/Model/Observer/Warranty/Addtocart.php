@@ -17,10 +17,6 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
 
         $product = $observer->getProduct();
 
-        if($request->getPost('bundle_option') && $product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE){
-            $warrantyData['dynamic_sku'] = $warrantyHelper->getComplexProductSku($product);
-        }
-
         $price = $warrantyHelper->removeFormatPrice($warrantyData['price']);
 
         if (!empty($warrantyData)) {
@@ -40,6 +36,11 @@ class Extend_Warranty_Model_Observer_Warranty_Addtocart
                     );
                 return;
             }
+
+            if($request->getPost('bundle_option') && $product->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE){
+                $warrantyData['dynamic_sku'] = $warrantyHelper->getComplexProductSku($product);
+            }
+
             $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
             $warrantyData['qty'] = $qty;
 
