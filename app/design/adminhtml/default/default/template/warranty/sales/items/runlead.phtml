@@ -6,7 +6,10 @@ $helper = Mage::helper('warranty/connector');
 ?>
 <tr>
     <td>
-        <div id="extend-offer-<?= $_item->getId() ?>"></div>
+        <?php if ($leadToken): ?>
+            <span><?= $this->escapeHtml(__('Lead Token')) ?>: </span><?= $this->escapeHtml($leadToken); ?>
+        <?php endif; ?>
+        <div id="extend-offer-<?= $_item->getId() ?>" style="height: 40px;"></div>
         <script type="text/javascript">
             var $j = jQuery.noConflict();
             Extend.config(<?php echo $helper->getJsonConfig()?>);
