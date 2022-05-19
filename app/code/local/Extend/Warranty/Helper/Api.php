@@ -30,8 +30,9 @@ class Extend_Warranty_Helper_Api extends Mage_Core_Helper_Abstract
 
         if (empty($errors)) {
             $offerInformation = $this->getOfferInformation($warrantyData['product']);
-            if (isset($offerInformation['base'])) {
-                $baseOfferInformation = $offerInformation['base'];
+            $recommendedPlans = isset($offerInformation['recommended']) ? $offerInformation['recommended'] : '';
+            if (isset($offerInformation[$recommendedPlans])) {
+                $baseOfferInformation = $offerInformation[$recommendedPlans];
                 $offerIds = array_column($baseOfferInformation, 'id');
                 if (in_array($warrantyData['planId'], $offerIds)) {
                     foreach ($baseOfferInformation as $offer) {
