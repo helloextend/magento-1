@@ -26,7 +26,7 @@ class Extend_Warranty_Model_Api_Databuilder_Product
             'title'       => (string)$productSubject->getName(),
             'description' => $description,
             'price'       => [
-                "amount"       => $productSubject->getFinalPrice(),
+                "amount"       => Mage::helper('warranty')->formatPrice($productSubject->getFinalPrice()),
                 "currencyCode" => "USD"
             ],
             'referenceId' => (string)$productSubject->getSku(),
