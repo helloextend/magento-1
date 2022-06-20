@@ -6,6 +6,9 @@
                 <name>css/warranty/custom_styles.css</name>
             </action>
         </reference>
+        <reference name="minicart_content">
+            <action method="addItemRender"><type>warranty</type><block>checkout/cart_item_renderer</block><template>warranty/checkout/cart/minicart/warranty.phtml</template></action>
+        </reference>
     </default>
     <cms_index_index>
         <reference name="head">
@@ -55,6 +58,11 @@
                 <type>configurable</type>
                 <block>checkout/cart_item_renderer_configurable</block>
                 <template>warranty/checkout/cart/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>warranty</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>warranty/checkout/cart/item/warranty.phtml</template>
             </action>
         </reference>
     </checkout_cart_index>
