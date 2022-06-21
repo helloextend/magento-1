@@ -8,6 +8,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     const TERM = 'warranty_term';
     const LEAD_TOKEN = 'lead_token';
     const DYNAMIC_SKU = 'bundle_sku';
+    const RELATED_ITEM_ID = 'related_item_id';
     const BUY_REQUEST = 'info_buyRequest';
     const TYPE_AFFILIATE = 'affilated';
     const XML_PATH_AUTHENTICATION = 'catalog/affilated/authentication';
@@ -70,6 +71,10 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
             $options[self::DYNAMIC_SKU] = $dynamicSku->getValue();
         }
 
+        if ($relatedItemId = $product->getCustomOption(self::RELATED_ITEM_ID)) {
+            $options[self::RELATED_ITEM_ID] = $relatedItemId->getValue();
+        }
+
         return $options;
     }
 
@@ -123,6 +128,10 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
 
         if ($buyRequest->hasDynamicSku()) {
             $product->addCustomOption(self::DYNAMIC_SKU, $buyRequest->getDynamicSku());
+        }
+
+        if ($buyRequest->hasRelatedItemId()) {
+            $product->addCustomOption(self::RELATED_ITEM_ID, $buyRequest->getRelatedItemId());
         }
 
         if ($buyRequest->getData('leadToken')) {

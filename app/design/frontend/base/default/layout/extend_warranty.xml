@@ -30,6 +30,7 @@
                     </text>
                 </action>
             </block>
+            <action method="addItem"  ifconfig="warranty/enableExtend/enable"><type>skin_js</type><name>js/warranty/bundle-warranties.js</name></action>
         </reference>
         <reference name="product.info.extrahint">
             <block type="warranty/init" name="extend.warranty.init" after="-" template="warranty/warranty.phtml"/>
@@ -74,7 +75,8 @@
             </block>
         </reference>
         <block type="core/text_list" name="additional.product.info" translate="label">
-            <block type="warranty/sales_order_view_lead" name="warranty_lead" template="warranty/order/view/item.phtml"/>
+            <block type="warranty/sales_order_view_lead" name="warranty_lead"
+                   template="warranty/order/view/item.phtml"/>
         </block>
         <!--        <reference name="my.account.wrapper">-->
         <!--            <block type="sales/order_view" name="sales.order.view">-->
