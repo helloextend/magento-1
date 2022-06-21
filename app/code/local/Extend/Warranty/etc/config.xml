@@ -156,6 +156,14 @@
                     </warranty>
                 </observers>
             </checkout_cart_update_item_complete>
+            <sales_quote_item_qty_set_after>
+                <observers>
+                    <warranty>
+                        <class>warranty/observer_warranty_updateQty</class>
+                        <method>execute</method>
+                    </warranty>
+                </observers>
+            </sales_quote_item_qty_set_after>
         </events>
     </frontend>
     <adminhtml>
