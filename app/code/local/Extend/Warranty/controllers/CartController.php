@@ -47,25 +47,32 @@ class Extend_Warranty_CartController extends Mage_Core_Controller_Front_Action
     public function addAction()
     {
         $warrantyData = $this->getRequest()->getPost('warranty');
+
+        /** @var Extend_Warranty_Helper_Data $warrantyHelper */
+        $warrantyHelper = Mage::helper('warranty');
+
         try {
             $this->_validateWarranty($warrantyData);
             //Check Qty
-            $_relatedProduct = $warrantyData['product'];
+            $_relatedProduct = [$warrantyData['product']];
+
+            if (isset($warrantyData['dynamic_sku']) && $warrantyData['dynamic_sku']) {
+                $_relatedProduct[] = $warrantyData['dynamic_sku'];
+            }
 
             $_qty = 1;
             $_cart = Mage::getSingleton('checkout/cart');
             $_quote = $_cart->getQuote();
             foreach ($_quote->getAllVisibleItems() as $_item) {
-                if ($_item->getSku() === $_relatedProduct) {
+                if (in_array($warrantyHelper->getComplexQuoteItemSku($_item), $_relatedProduct)) {
                     $_qty = $_item->getQty();
                 }
             }
             $warrantyData['qty'] = $_qty;
-            $warrantyHelper = Mage::helper('warranty');
             $price = $warrantyHelper->removeFormatPrice($warrantyData['price']);
 
 
-            $warranty = Mage::helper('warranty')->getWarrantyProduct();
+            $warranty = $warrantyHelper->getWarrantyProduct();
             $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
 
             $_cart->addProduct($warranty, $warrantyData);
