@@ -60,7 +60,12 @@
     <adminhtml_sales_order_create_load_block_items>
         <reference name="order_item_extra_info">
             <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-"
-                   template="warranty/sales/order/create/warranty.phtml"/>
+                   template="warranty/sales/order/create/warranty.phtml">
+                <action method="setWarrantyRender">
+                    <block>warranty/adminhtml_sales_order_create_warranty</block>
+                    <template>warranty/sales/order/create/warranty/child.phtml</template>
+                </action>
+            </block>
         </reference>
         <reference name="items_grid">
             <action method="setTemplate" ifconfig="warranty/enableExtend/enable">

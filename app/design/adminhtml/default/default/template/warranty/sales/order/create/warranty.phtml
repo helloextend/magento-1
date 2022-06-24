@@ -1,11 +1,13 @@
 <?php
 $_item = $this->getItem();
-$_product = $_item->getProduct();
-$helper = Mage::helper('warranty/connector');
-/** @var Extend_Warranty_Helper_Data $warrantyHelper */
-$warrantyHelper = Mage::helper('warranty');
 ?>
-<?php if ($_product->getTypeId() !== 'warranty'): ?>
+<?php if ($_item && $_item->getProductType() !== 'warranty'): ?>
+    <?php
+        $_product = $_item->getProduct();
+        $helper = Mage::helper('warranty/connector');
+        /** @var Extend_Warranty_Helper_Data $warrantyHelper */
+        $warrantyHelper = Mage::helper('warranty');
+    ?>
     <?php if ($helper->isDisplayOffersEnabled()): ?>
         <tbody id="warranty-<?= $_item->getId() ?>">
         <tr>
@@ -26,7 +28,7 @@ $warrantyHelper = Mage::helper('warranty');
                                     plan.qty = <?= $_item->getQty() ?>;
 
                                     <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>
-                                        plan.dynamic_sku = "<?= $warrantyHelper->getComplexProductSku($_product);?>";
+                                    plan.dynamic_sku = "<?= $warrantyHelper->getComplexProductSku($_product);?>";
                                     <?php endif;?>
 
                                     $j.get(url, {
