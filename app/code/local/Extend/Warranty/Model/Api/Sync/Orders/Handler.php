@@ -6,6 +6,7 @@ class Extend_Warranty_Model_Api_Sync_Orders_Handler
 
     const ENDPOINT_URI = 'orders';
 
+    const BATCH_CREATE_ORDER_ENDPOINT_URI = 'orders/batch';
 
     /**
      * @return Extend_Warranty_Model_Api_Connector
@@ -91,5 +92,43 @@ class Extend_Warranty_Model_Api_Sync_Orders_Handler
         }
 
         return $responseBody;
+    }
+
+    protected function sync($ordersCollection, $batch)
+    {
+        $data = [];
+        foreach ($ordersCollection as $order) {
+            $data[] = Mage::getModel('warranty/api_databuilder_order')->build($order);
+        }
+
+        try {
+            $response = Mage::getModel('warranty/api_connector')->call(
+                self::BATCH_CREATE_ORDER_ENDPOINT_URI,
+                \Zend_Http_Client::POST,
+                $data
+            );
+            $responseArray = json_decode($response);
+            
+            Mage::getModel('warranty/logger')->info('Synced ' . count($data) . ' orders in batch ' . $batch);
+
+            $this->saveSyncedOrders($responseArray);
+
+            $syncedData = array();
+            foreach ($responseArray as $name => $section) {
+                $info = array_column($section, 'referenceId');
+                $syncedData[$name] = $info;
+            }
+            Mage::getModel('warranty/logger')->info('', $syncedData, 'Synced Data');
+        } catch (Zend_Http_Client_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (Exception $e) {
+            Mage::getModel('warranty/logger')->critical($e->getMessage());
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    protected function saveSyncedOrders($orders)
+    {
+        //@TODO save order entity ids and status
     }
 }

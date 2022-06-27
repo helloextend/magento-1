@@ -38,6 +38,18 @@ function syncProducts(url) {
         openRefundPopup('Product Synchronization Error', getWindowContent(responseData.message, responseData.status));
     });
 }
+function syncOrders(url) {
+    showLoader();
+    $j.get(
+        url,
+        {}
+    ).done(function (data) {
+        openRefundPopup('Order Synchronization', getWindowContent(data.message, data.status))
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        let responseData = jqXHR.responseJSON;
+        openRefundPopup('Orders Synchronization Error', getWindowContent(responseData.message, responseData.status));
+    });
+}
 
 function openRefundPopup(
     title = 'Warranty Refund Dialog',

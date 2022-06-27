@@ -224,6 +224,18 @@
                             <show_in_store>1</show_in_store>
                         </enable>
                     </fields>
+                    <fields>
+                        <syncbutton>
+                            <label><![CDATA[Sync Orders]]></label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>warranty/system_config_orders_button</frontend_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>20</sort_order>
+                        </syncbutton>
+                    </fields>
+
                 </orders>
                 <offers>
                     <label><![CDATA[offers]]></label>
