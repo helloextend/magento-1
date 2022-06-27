@@ -79,7 +79,7 @@
                 /** get the users plan selection */
                 const plan = component.getPlanSelection();
 
-                if (extendBundleWarranties !== undefined) {
+                if (typeof extendBundleWarranties !== 'undefined') {
                     extendBundleWarranties.addToCartCallback();
                 }
                 let productSku = $j("#product-sku").val();
@@ -95,7 +95,7 @@
                         referenceId: sku,
                         onClose: function (plan) {
                             let hasSelectedPlan = false;
-                            if (extendBundleWarranties !== undefined) {
+                            if (typeof extendBundleWarranties !== 'undefined') {
                                 hasSelectedPlan = extendBundleWarranties.hasWarranties;
                             }
 
