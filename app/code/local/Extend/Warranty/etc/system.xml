@@ -14,7 +14,7 @@
             <sort_order>100</sort_order>
             <show_in_default>1</show_in_default>
             <show_in_website>1</show_in_website>
-            <show_in_store>0</show_in_store>
+            <show_in_store>1</show_in_store>
             <groups>
                 <extend_info>
                     <label><![CDATA[Extend Protection Plans]]></label>
@@ -224,19 +224,74 @@
                             <show_in_store>1</show_in_store>
                         </enable>
                     </fields>
+                </orders>
+                <historical_orders>
+                    <label>Sync Historical Orders</label>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <sort_order>50</sort_order>
+                    <expanded>1</expanded>
                     <fields>
+                        <batch_size>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <sort_order>10</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <label>Batch Size</label>
+                            <source_model>warranty/config_source_historicalOrdersBatchsize</source_model>
+                            <comment>
+                                Save the configuration and flush the cache before running the sync process.
+                            </comment>
+                        </batch_size>
                         <syncbutton>
                             <label><![CDATA[Sync Orders]]></label>
                             <frontend_type>text</frontend_type>
                             <frontend_model>warranty/system_config_orders_button</frontend_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                             <sort_order>20</sort_order>
                         </syncbutton>
+                        <cron_sync_enabled>
+                            <frontend_type>select</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>30</sort_order>
+                            <label>Enable Synchronization by Cron</label>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <comment>Orders can be synchronized automatically using this functionality.</comment>
+                        </cron_sync_enabled>
+                        <!--                    <group id="cron"-->
+                        <!--                           translate="label comment"-->
+                        <!--                           sortOrder="40"-->
+                        <!--                           showInDefault="1"-->
+                        <!--                           showInWebsite="0"-->
+                        <!--                           showInStore="0"-->
+                        <!--                           canRestore="1">-->
+                        <!--                        <label>Cron Settings</label>-->
+                        <!--                        <depends>-->
+                        <!--                            <field id="warranty/products/cron_sync_enabled">1</field>-->
+                        <!--                        </depends>-->
+                        <!--                        <field id="frequency"-->
+                        <!--                               translate="label comment"-->
+                        <!--                               type="text"-->
+                        <!--                               sortOrder="10"-->
+                        <!--                               showInDefault="1"-->
+                        <!--                               showInWebsite="0"-->
+                        <!--                               showInStore="0"-->
+                        <!--                               canRestore="1">-->
+                        <!--                            <label>Frequency</label>-->
+                        <!--                            <comment>Cron schedule expression</comment>-->
+                        <!--                            <backend_model>Extend\Warranty\Model\Config\Backend\OrdersSyncCronSchedule</backend_model>-->
+                        <!--                            <validate>validate-cron-expression</validate>-->
+                        <!--                        </field>-->
+                        <!--                    </group>-->
                     </fields>
+                </historical_orders>
 
-                </orders>
                 <offers>
                     <label><![CDATA[offers]]></label>
                     <show_in_default>1</show_in_default>

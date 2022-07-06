@@ -2,11 +2,11 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'abstract.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'app/Mage.php';
 
+
 class Extend_Orders_Sync extends Local_Shell_Abstract
 {
     public function run()
     {
-        $batchSize = $this->getArg('batch-size');
         $logger = $this->initLog();
         /** @var Extend_Warranty_Model_SyncProcessor_Orders $ordersSyncProcessor */
         $ordersSyncProcessor = Mage::getModel(
@@ -14,17 +14,15 @@ class Extend_Orders_Sync extends Local_Shell_Abstract
         );
 
         $ordersSyncProcessor->setLogger($logger);
-
-        if ($batchSize) {
-            $ordersSyncProcessor->setBatchSize($batchSize);
+        $size = $ordersSyncProcessor->getCollection()->getSize();
+        if ($size) {
+            $pagesCount = $ordersSyncProcessor->getCollection()->getLastPageNumber();
+            $bar = $this->progressBar($pagesCount);
+            $ordersSyncProcessor->setProgressBar($bar);
+            $ordersSyncProcessor->process();
+        } else {
+            $logger->info("Production orders have already been integrated to Extend. The historical import has been canceled");
         }
-
-        $pagesCount = $ordersSyncProcessor->getCollection()->getLastPageNumber();
-
-        $bar = $this->progressBar($pagesCount);
-
-        $ordersSyncProcessor->setProgressBar($bar);
-        $ordersSyncProcessor->process();
     }
 
     /**
@@ -34,9 +32,7 @@ class Extend_Orders_Sync extends Local_Shell_Abstract
     public function usageHelp()
     {
         return <<<USAGE
-    Usage:  php -f orders_sync.php -- [options]
-            php -f orders_sync.php -- --batch-size 100 
-
+    Usage:  php -f orders_sync.php
     help    This help 
     
 USAGE;

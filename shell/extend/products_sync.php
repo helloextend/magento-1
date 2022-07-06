@@ -8,9 +8,9 @@ class Extend_Products_Sync extends Local_Shell_Abstract
     {
         $batchSize = $this->getArg('batch-size');
         $logger = $this->initLog();
-        /** @var Extend_Warranty_Model_ProductSyncProcessor $productSyncProcessor */
+        /** @var Extend_Warranty_Model_SyncProcessor_Products $productSyncProcessor */
         $productSyncProcessor = Mage::getModel(
-            'warranty/productSyncProcessor'
+            'warranty/syncProcessor_products'
         );
 
         $productSyncProcessor->setLogger($logger);
@@ -19,7 +19,7 @@ class Extend_Products_Sync extends Local_Shell_Abstract
             $productSyncProcessor->setBatchSize($batchSize);
         }
 
-        $pagesCount = $productSyncProcessor->getProductCollection()->getLastPageNumber();
+        $pagesCount = $productSyncProcessor->getCollection()->getLastPageNumber();
 
         $bar = $this->progressBar($pagesCount);
 

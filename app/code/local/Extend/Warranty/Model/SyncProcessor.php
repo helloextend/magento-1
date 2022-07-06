@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Extend_Warranty_Model_ProductSyncProcessor
+ * Class Extend_Warranty_Model_SyncProcessor
  */
 abstract class Extend_Warranty_Model_SyncProcessor
 {
@@ -74,12 +74,11 @@ abstract class Extend_Warranty_Model_SyncProcessor
         return $this->progressBar;
     }
 
-    /**
-     * @return \Mage_Catalog_Model_Resource_Product_Collection
-     */
     abstract public function getCollection();
 
     abstract function getSyncHandler();
+
+    abstract function getStartMessage();
 
     /**
      *
@@ -88,7 +87,7 @@ abstract class Extend_Warranty_Model_SyncProcessor
     {
         try {
             $this->getLogger()->debug('== Script execution started ==');
-            $this->getLogger()->info("Started syncing products from Magento to Extend. Please wait!");
+            $this->getLogger()->info($this->getStartMessage());
             $collection = $this->getCollection();
             $pages = $collection->getLastPageNumber();
             $this->getLogger()->info('Total batches: ' . $pages);
@@ -101,13 +100,16 @@ abstract class Extend_Warranty_Model_SyncProcessor
                 $collection->clear();
                 if ($this->getProgressBar()) {
                     $message = "Updated batch " . $currentPage;
-                    $this->getProgressBar()->update($currentPage, $message);
+                    $this->getProgressBar()->next(1, $message);
                 }
                 $currentPage++;
             } while ($currentPage <= $pages);
             $this->getLogger()->info("Syncing was finished");
             Mage::helper('warranty/connector')->setLastSyncDate();
         } catch (Exception $e) {
+            if ($this->getProgressBar()) {
+                $this->getProgressBar()->finish();
+            }
             $this->getLogger()->crit($e->getMessage());
             $this->getLogger()->crit('Syncing has been stopped!');
         }

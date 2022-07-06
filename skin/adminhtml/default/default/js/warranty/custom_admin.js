@@ -38,18 +38,51 @@ function syncProducts(url) {
         openRefundPopup('Product Synchronization Error', getWindowContent(responseData.message, responseData.status));
     });
 }
+
+function orderSyncUpdate(progress) {
+    console.log('update', progress);
+    window.orderSyncProgress = progress;
+    jQuery("#orderSyncProgress").html(progress.text + " — " + Math.ceil(progress.percent) + '%');
+}
+
+function orderSyncFinish(argument) {
+    console.log('orderSyncProgress', argument);
+    let status = 'success';
+    let message = window.orderSyncProgress.text;
+    if (window.orderSyncProgress && window.orderSyncProgress.max != window.orderSyncProgress.current) {
+        status = 'FAIL';
+        message = 'Sync was not finished. See logs.';
+    }
+    openRefundPopup('Order Synchronization', getWindowContent(message, status))
+    $j('#orderSyncProgress').remove();
+    hideLoader();
+}
+
 function syncOrders(url) {
     showLoader();
-    $j.get(
-        url,
-        {}
-    ).done(function (data) {
-        openRefundPopup('Order Synchronization', getWindowContent(data.message, data.status))
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        let responseData = jqXHR.responseJSON;
-        openRefundPopup('Orders Synchronization Error', getWindowContent(responseData.message, responseData.status));
-    });
+    var iframeId = "sync_order_iframe";
+    var iframeTag = jQuery("<iframe/>",
+        {
+            src: url,
+            id: iframeId
+        });
+    $j("#contract_window_mask").html(iframeTag);
+    $j("#loading_mask_loader").append(
+        jQuery('<p/>', {id: 'orderSyncProgress'})
+    );
+
+    window.orderSyncProgress = {};
+    // $j.get(
+    //     ,
+    //     {}
+    // ).done(function (data) {
+    //     openRefundPopup('Order Synchronization', getWindowContent(data.message, data.status))
+    // }).fail(function (jqXHR, textStatus, errorThrown) {
+    //     let responseData = jqXHR.responseJSON;
+    //     openRefundPopup('Orders Synchronization Error', getWindowContent(responseData.message, responseData.status));
+    // });
 }
+
 
 function openRefundPopup(
     title = 'Warranty Refund Dialog',
@@ -92,7 +125,7 @@ function hideLoader() {
 }
 
 function getWindowContent(message, status) {
-    let color = status === 'FAIL'? 'red' : 'green';
+    let color = status === 'FAIL' ? 'red' : 'green';
     let content = '<p style="margin: 10px 0;"><strong>' + message + '</strong></p>';
     content += '<p style="margin: 10px 0;">Current Status - <strong style="color:' + color + '">' + status + '</strong></p>';
     content += '<div class="buttons-set a-right" style="margin-top:20px">';

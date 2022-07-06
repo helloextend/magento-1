@@ -10,10 +10,10 @@ $installer->startSetup();
 $table = $installer->getConnection()
     ->newTable($installer->getTable('extend_historical_orders'))
     ->addColumn('entity_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
-        'identity' => true,
+        'identity' => false,
         'unsigned' => true,
         'nullable' => false,
-        'primary' => true,
+        'primary' => false,
     ), 'Order ID')
     ->addColumn('was_sent', Varien_Db_Ddl_Table::TYPE_SMALLINT, null, array(
         'nullable' => true,
@@ -22,7 +22,7 @@ $table = $installer->getConnection()
     ->addForeignKey(
         'EXTEND_HISTORICAL_ORDERS_SALES_ORDER_ENTITY_ID',
         'entity_id',
-        'sales_order',
+        'sales_flat_order',
         'entity_id',
         Varien_Db_Ddl_Table::ACTION_CASCADE
     )

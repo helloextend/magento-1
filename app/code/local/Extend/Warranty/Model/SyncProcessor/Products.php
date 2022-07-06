@@ -1,10 +1,15 @@
 <?php
 
 /**
- * Class Extend_Warranty_Model_ProductSyncProcessor
+ * Class Extend_Warranty_Model_SyncProcessor_Products
  */
-class Extend_Warranty_Model_SyncProcessor_Products  extends Extend_Warranty_Model_SyncProcessor
+class Extend_Warranty_Model_SyncProcessor_Products extends Extend_Warranty_Model_SyncProcessor
 {
+    public function getStartMessage()
+    {
+        return 'Started syncing products from Magento to Extend. Please wait!';
+    }
+
     /**
      * @return \Mage_Catalog_Model_Resource_Product_Collection
      */
@@ -21,6 +26,36 @@ class Extend_Warranty_Model_SyncProcessor_Products  extends Extend_Warranty_Mode
         }
         return $this->collection;
     }
+
+    /**
+     * @return integer
+     */
+    public function getBatchSize()
+    {
+        if ($this->batchSize === null) {
+            $this->setBatchSize(Mage::helper('warranty/connector')->getBatchSize());
+        }
+        return $this->batchSize;
+    }
+
+    /**
+     * @param $batchSize
+     * @return $this
+     *
+     */
+    public function setBatchSize($batchSize)
+    {
+        if ($batchSize > 100 || $batchSize <= 0) {
+            $this->getLogger()->alert('Invalid batch size, value must be between 1-100.');
+            throw new Exception("Batch size is invalid");
+        }
+
+        $this->getLogger()->info('Setting product batch to ' . $batchSize);
+
+        $this->batchSize = $batchSize;
+        return $this;
+    }
+
 
     public function getSyncHandler()
     {
