@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Extend_Warranty>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </Extend_Warranty>
     </modules>
     <global>
@@ -14,7 +14,16 @@
         <models>
             <warranty>
                 <class>Extend_Warranty_Model</class>
+                <resourceModel>warranty_resource</resourceModel>
             </warranty>
+            <warranty_resource>
+                <class>Extend_Warranty_Model_Resource</class>
+                <entities>
+                    <historical_orders>
+                        <table>extend_historical_orders</table>
+                    </historical_orders>
+                </entities>
+            </warranty_resource>
         </models>
         <resources>
             <warranty_setup>
@@ -198,6 +207,10 @@
             <products>
                 <batch_size>100</batch_size>
             </products>
+            <historical_orders>
+                <cron_sync_enabled>1</cron_sync_enabled>
+                <batch_size>5</batch_size>
+            </historical_orders>
         </warranty>
     </default>
 
@@ -208,9 +221,19 @@
                     <cron_expr>*/30 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>warranty/productSyncProcessor::process</model>
+                    <model>warranty/syncProcessor_products::process</model>
                 </run>
             </extend_product_sync>
+        </jobs>
+        <jobs>
+            <extend_orders_sync>
+                <schedule>
+                    <cron_expr>0 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>warranty/cron_historical_sync::execute</model>
+                </run>
+            </extend_orders_sync>
         </jobs>
     </crontab>
 </config>

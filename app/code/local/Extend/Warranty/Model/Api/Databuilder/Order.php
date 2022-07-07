@@ -35,7 +35,7 @@ class Extend_Warranty_Model_Api_Databuilder_Order
     }
 
     /**
-     * @return Extend_Warranty_Helper_Connector|Mage_Core_Helper_Abstract
+     * @return Extend_Warranty_Helper_Connector
      */
     public function getConnector()
     {
@@ -49,6 +49,10 @@ class Extend_Warranty_Model_Api_Databuilder_Order
      */
     public function build($order)
     {
+        $orderStore = $order->getStore();
+
+        $this->getConnector()->setStore($orderStore);
+
         $currencyCode = $order->getBaseCurrencyCode();
         $transactionTotal = $this->getHelper()->formatPrice($order->getBaseGrandTotal());
         $lineItems = [];
@@ -250,17 +254,25 @@ class Extend_Warranty_Model_Api_Databuilder_Order
     {
         if ($orderItem->getProductType() == Extend_Warranty_Model_Product_Type::TYPE_CODE) {
             $productSku = $orderItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT);
+            $associatedOrderItem = $this->getAssociatedOrderItem($orderItem);
             $product = Mage::getModel('catalog/product')->loadByAttribute('sku', $productSku);
         } else {
             $productSku = $orderItem->getProduct()->getSku();
             $product = $orderItem->getProduct();
         }
+        $listPrice = $product ? $product->getPrice() : 0;
+        try {
+            $purchasePrice = $product ? $product->getFinalPrice() : 0;
+        } catch (Exception $e) {
+            $purchasePrice = $listPrice;
+        }
+        $productName = $product ? $product->getName() : '';
 
         return [
             'id' => $productSku,
-            'listPrice' => $this->getHelper()->formatPrice($product->getFinalPrice()),
-            'name' => $product->getName(),
-            'purchasePrice' => $this->getHelper()->formatPrice($product->getFinalPrice())
+            'listPrice' => $listPrice,
+            'name' => $productName,
+            'purchasePrice' => $purchasePrice
         ];
     }
 
@@ -286,6 +298,22 @@ class Extend_Warranty_Model_Api_Databuilder_Order
         }
 
         return $status;
+    }
+
+    protected function getAssociatedOrderItem($orderItem)
+    {
+        if ($orderItem->getProductType() != Extend_Warranty_Model_Product_Type::TYPE_CODE) {
+            return false;
+        }
+
+        $associatedSku = $orderItem->getProductOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT);
+
+        $orderItems = $orderItem->getOrder()->getAllItems();
+        foreach ($orderItems as $item) {
+            if ($item->getSku() == $associatedSku) {
+                return $item;
+            }
+        }
     }
 
     /**

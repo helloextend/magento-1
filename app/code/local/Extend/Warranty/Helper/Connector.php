@@ -5,7 +5,11 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     const SANDBOX_URL = 'https://api-demo.helloextend.com/';
     const LIVE_URL = 'https://api.helloextend.com/';
     const XML_PATH_PRODUCTS_BATCH_SIZE = 'warranty/products/batch_size';
+    const XML_PATH_HISTORICAL_ORDERS_BATCH_SIZE = 'warranty/historical_orders/batch_size';
+    const XML_PATH_HISTORICAL_ORDERS_SYNC_PERIOD = 'warranty/historical_orders/historical_orders_sync';
+    const XML_PATH_HISTORICAL_ORDERS_CRON_SYNC_ENABLED = 'warranty/historical_orders/cron_sync_enabled';
     const XML_PATH_LAST_SYNC_PATH = 'warranty/products/last_sync';
+    const XML_PATH_LAST_ORDERS_SYNC_DATE_PATH = 'warranty/products/last_orders_sync_date';
     const XML_PATH_AUTH_MODE = 'warranty/authentication/auth_mode';
     const XML_PATH_LIVE_API_KEY = 'warranty/authentication/api_key';
     const XML_PATH_LIVE_STORE_ID = 'warranty/authentication/store_id';
@@ -90,6 +94,11 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::XML_PATH_STORE_NAME, $store);
     }
 
+    public function setStore($store)
+    {
+        $this->_store = $store;
+        return $this;
+    }
 
     /**
      * Retrieve Store object
@@ -145,6 +154,47 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * @return mixed
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function getHistoricalOrdersBatchSize()
+    {
+        $store = $this->getStore();
+        return Mage::getStoreConfig(self::XML_PATH_HISTORICAL_ORDERS_BATCH_SIZE, $store);
+    }
+
+    /**
+     * @return mixed
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function getHistoricalOrdersSyncPeriod($store = null)
+    {
+        $store = is_null($store) ? $this->getStore() :( $store);
+        return Mage::getStoreConfig(self::XML_PATH_HISTORICAL_ORDERS_SYNC_PERIOD, $store);
+    }
+
+    /**
+     * @return mixed
+     * @throws Mage_Core_Model_Store_Exception
+     */
+    public function getHistoricalOrdersSyncEnabled($store = null)
+    {
+        $store = is_null($store) ? $this->getStore() :( $store);
+        return Mage::getStoreConfig(self::XML_PATH_HISTORICAL_ORDERS_CRON_SYNC_ENABLED, $store);
+    }
+
+    public function setHistoricalOrdersSyncPeriod($value, $scope = 'default', $scopeId = 0)
+    {
+        Mage::getModel('core/config')->saveConfig(
+            self::XML_PATH_HISTORICAL_ORDERS_SYNC_PERIOD,
+            $value,
+            $scope,
+            $scopeId);
+        Mage::getConfig()->reinit();
+        return $this;
+    }
+
+    /**
      * return void
      */
     public function setLastSyncDate()
@@ -167,9 +217,9 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
      * @return bool
      * @throws Mage_Core_Model_Store_Exception
      */
-    public function isExtendEnabled()
+    public function isExtendEnabled($storeId = null)
     {
-        $store = $this->getStore();
+        $store = $storeId ? $storeId : $this->getStore();
         return Mage::getStoreConfigFlag(self::XML_PATH_ENABLE_EXTEND, $store);
     }
 

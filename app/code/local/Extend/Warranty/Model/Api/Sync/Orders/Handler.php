@@ -6,6 +6,9 @@ class Extend_Warranty_Model_Api_Sync_Orders_Handler
 
     const ENDPOINT_URI = 'orders';
 
+    const BATCH_CREATE_ORDER_ENDPOINT_URI = 'orders/batch';
+
+    const SEARCH_ORDER_ENDPOINT_URI = 'orders/search';
 
     /**
      * @return Extend_Warranty_Model_Api_Connector
@@ -91,5 +94,105 @@ class Extend_Warranty_Model_Api_Sync_Orders_Handler
         }
 
         return $responseBody;
+    }
+
+    public function sync($ordersCollection, $batch)
+    {
+        $data = [];
+        foreach ($ordersCollection as $order) {
+            if ($order->hasWasSent() && $order->getWasSent()) {
+                continue;
+            }
+            $orderData = Mage::getModel('warranty/api_databuilder_order')->build($order);
+            if ($orderData && $this->checkOrderBeforeSync($orderData)) {
+                $data[] = $orderData;
+            }
+        }
+
+        try {
+            if ($data) {
+                $response = Mage::getModel('warranty/api_connector')->call(
+                    self::BATCH_CREATE_ORDER_ENDPOINT_URI,
+                    \Zend_Http_Client::POST,
+                    $data
+                );
+                $responseArray = json_decode($response, true);
+
+                Mage::getModel('warranty/logger')->info('Synced ' . count($data) . ' orders in batch ' . $batch);
+
+                $syncedData = array();
+                foreach ($responseArray as $name => $section) {
+                    $info = array_column($section, 'transactionId');
+                    $syncedData[$name] = $info;
+                }
+                Mage::getModel('warranty/logger')->info('', $syncedData, 'Synced Data');
+            }
+            $this->saveSyncedOrders($ordersCollection);
+        } catch (Zend_Http_Client_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (Exception $e) {
+            Mage::getModel('warranty/logger')->critical($e->getMessage());
+            throw new Exception($e->getMessage());
+        }
+
+    }
+
+    /**
+     * Check order data if it should be synced
+     * @param $orderData
+     * @return bool
+     */
+    protected function checkOrderBeforeSync($orderData)
+    {
+        if (count($orderData['lineItems']) == 0) {
+            return false;
+        }
+
+        if (!$orderData['customer']) {
+            return false;
+        }
+
+        foreach ($orderData['lineItems'] as $lineItem) {
+            if ($lineItem['plane'] || $lineItem['leadToken']) {
+                return false;
+            }
+        }
+        /** In case the order should be checked on extend side before send */
+//        if ($this->loadExtendOrder($orderData['transactionId'])) {
+//            return false;
+//        }
+        return true;
+    }
+
+    /**
+     * @param $orders
+     * @return $this
+     * @throws Exception
+     */
+    protected function saveSyncedOrders($orders)
+    {
+        foreach ($orders as $syncedOrder) {
+            $model = Mage::getModel('warranty/historicalOrder');
+            $model
+                ->setId($syncedOrder->getId())
+                ->load()
+                ->setData('was_sent', true)
+                ->save();
+        }
+        return $this;
+    }
+
+    public function loadExtendOrder($transactionId)
+    {
+        $extendOrder = $this->getConnector()->call(
+            self::SEARCH_ORDER_ENDPOINT_URI . "?transactionId=" . $transactionId,
+            \Zend_Http_Client::GET
+        );
+
+        $extendOrderObj = json_decode($extendOrder);
+        if ($extendOrderObj) {
+            return $extendOrderObj;
+        }
+        return false;
     }
 }
