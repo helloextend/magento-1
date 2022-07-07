@@ -11,7 +11,8 @@ class Extend_Warranty_Model_Observer_Warranty_UpdateQty
         $item = $observer->getItem();
         if ($item->getProductType() == Extend_Warranty_Model_Product_Type::TYPE_CODE
             && $item->getId()
-            && $item->getOrigData('qty') != $item->getData('qty')
+            && $item->getBuyRequest()->getLeadQty()
+            && $item->getBuyRequest()->getLeadQty() < $item->getData('qty')
             && $item->getOptionByCode('lead_token')
             && $item->getOptionByCode('lead_token')->getValue()
         ) {
@@ -20,7 +21,7 @@ class Extend_Warranty_Model_Observer_Warranty_UpdateQty
             $item->addErrorInfo(
                 'warranty',
                 Mage_CatalogInventory_Helper_Data::ERROR_QTY_INCREMENTS,
-                Mage::helper('warranty')->__('This warranty qty can\'t be updated as it is a Lead')
+                Mage::helper('warranty')->__('This warranty qty can\'t be more then warrantable product qty: %s', $item->getBuyRequest()->getLeadQty())
             );
         }
     }

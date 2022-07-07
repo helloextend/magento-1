@@ -18,6 +18,10 @@ class Extend_Warranty_CartController extends Mage_Core_Controller_Front_Action
             $warranty = Mage::helper('warranty')->getWarrantyProduct();
             $warranty = Mage::getModel('catalog/product')->load($warranty->getId());
 
+            if ($warrantyData['qty']) {
+                $warrantyData['lead_qty'] = $warrantyData['qty'];
+            }
+
             $_cart = Mage::getSingleton('checkout/cart');
             $price = Mage::helper('warranty')->removeFormatPrice($warrantyData['price']);
             $_cart->addProduct($warranty, $warrantyData);
