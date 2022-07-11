@@ -154,12 +154,14 @@ class Extend_Warranty_Model_SyncProcessor_Orders extends Extend_Warranty_Model_S
 
             if (!$this->hasError) {
                 $this->updateOrdersSyncPeriod($store->getId());
+            }
+            else{
                 $hasError = true;
             }
         }
 
         if ($allStoresProcessing && !$hasError) {
-            $this->updateOrdersSyncPeriod();
+            $this->updateOrdersSyncPeriod(); //updates sync date in global scope
         }
     }
 
