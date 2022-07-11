@@ -80,6 +80,9 @@ abstract class Extend_Warranty_Model_SyncProcessor
 
     abstract function getStartMessage();
 
+    protected $hasError = false;
+    protected $errorMessages = [];
+
     /**
      *
      */
@@ -110,6 +113,8 @@ abstract class Extend_Warranty_Model_SyncProcessor
             if ($this->getProgressBar()) {
                 $this->getProgressBar()->finish();
             }
+            $this->hasError = true;
+            $this->errorMessages[] = $e->getMessage();
             $this->getLogger()->crit($e->getMessage());
             $this->getLogger()->crit('Syncing has been stopped!');
         }

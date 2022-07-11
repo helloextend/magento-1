@@ -175,7 +175,7 @@ class Extend_Warranty_Model_Api_Sync_Orders_Handler
             $model = Mage::getModel('warranty/historicalOrder');
             $model
                 ->setId($syncedOrder->getId())
-                ->load()
+                ->load($syncedOrder->getId())
                 ->setData('was_sent', true)
                 ->save();
         }

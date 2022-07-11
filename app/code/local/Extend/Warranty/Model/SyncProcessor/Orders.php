@@ -137,6 +137,7 @@ class Extend_Warranty_Model_SyncProcessor_Orders extends Extend_Warranty_Model_S
             $stores = Mage::app()->getStores();
             $allStoresProcessing = true;
         }
+        $hasError = false;
 
         foreach ($stores as $store) {
             if (!Mage::helper('warranty/connector')->isExtendEnabled($store->getId())) {
@@ -151,11 +152,16 @@ class Extend_Warranty_Model_SyncProcessor_Orders extends Extend_Warranty_Model_S
 
             parent::process();
 
-            $this->updateOrdersSyncPeriod($store->getId());
+            if (!$this->hasError) {
+                $this->updateOrdersSyncPeriod($store->getId());
+            }
+            else{
+                $hasError = true;
+            }
         }
 
-        if ($allStoresProcessing) {
-            $this->updateOrdersSyncPeriod();
+        if ($allStoresProcessing && !$hasError) {
+            $this->updateOrdersSyncPeriod(); //updates sync date in global scope
         }
     }
 
@@ -167,7 +173,7 @@ class Extend_Warranty_Model_SyncProcessor_Orders extends Extend_Warranty_Model_S
     {
         $date = Mage::app()->getLocale()->date(null, null, null, false);
         $value = $date->toString(Varien_Date::DATE_INTERNAL_FORMAT);
-        $scope = $storeId ? Mage_Adminhtml_Block_System_Config_Form::SCOPE_STORES : \Mage_Adminhtml_Block_System_Config_Form::SCOPE_DEFAULT;
+        $scope = $storeId ? Mage_Adminhtml_Block_System_Config_Form::SCOPE_STORES : Mage_Adminhtml_Block_System_Config_Form::SCOPE_DEFAULT;
         $scopeId = $storeId ? $storeId : 0;
         Mage::helper('warranty/connector')->setHistoricalOrdersSyncPeriod($value, $scope, $scopeId);
     }
