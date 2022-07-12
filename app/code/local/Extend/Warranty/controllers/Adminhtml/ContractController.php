@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @see Extend_Warranty_Adminhtml_Extend_OrderController
+ * @deprecated
+ */
 class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Controller_Action
 {
     /**
@@ -20,6 +24,10 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
         }
 
         $contractId = $this->getRequest()->getParam('contractId');
+
+        $itemId = (string)$this->getRequest()->getParam('itemId');
+        $item = Mage::getModel('sales/order_item')->load($itemId);
+
         $isValidationRequest = $this->getRequest()->getParam('validation');
 
         /* Validation Request */
@@ -45,8 +53,6 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
             return;
         }
 
-        $itemId = (string)$this->getRequest()->getParam('itemId');
-        $item = Mage::getModel('sales/order_item')->load($itemId);
         $options = $item->getProductOptions();
         $response_log = empty($options['refund_responses_log']) ? [] : $options['refund_responses_log'];
 
@@ -61,7 +67,7 @@ class Extend_Warranty_Adminhtml_ContractController extends Mage_Adminhtml_Contro
             // Refunds log
             $response_log[] = [
                 "contract_id" => $_contractId,
-                "response"    => $refundResponse
+                "response" => $refundResponse
             ];
 
             if ($refundResponse == true) {

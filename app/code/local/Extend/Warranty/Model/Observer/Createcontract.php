@@ -8,6 +8,13 @@ class Extend_Warranty_Model_Observer_Createcontract
      */
     public function execute(Varien_Event_Observer $observer)
     {
+        if (
+            !Mage::helper('warranty/connector')->isModuleEnabled() ||
+            Mage::helper('warranty/connector')->isOrdersApiEnabled()
+        ) {
+            return;
+        }
+
         $invoice = $observer->getEvent()->getInvoice();
         $order = $invoice->getOrder();
         $warranties = [];

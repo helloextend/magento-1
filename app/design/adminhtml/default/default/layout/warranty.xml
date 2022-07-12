@@ -5,15 +5,15 @@
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/jquery-1.12.0.js</script>
-                <params />
-                <if />
+                <params/>
+                <if/>
                 <condition>is_enterprise</condition>
             </action>
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
                 <type>js</type>
                 <script>lib/jquery/jquery-1.12.1.js</script>
-                <params />
-                <if />
+                <params/>
+                <if/>
                 <condition>is_community</condition>
             </action>
             <action method="addItem" ifconfig="warranty/enableExtend/enable">
@@ -48,12 +48,24 @@
             </action>
         </reference>
         <reference name="order_item_extra_info">
-            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-" template="warranty/sales/order/create/warranty.phtml"/>
+            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-"
+                   template="warranty/sales/order/create/warranty.phtml">
+                <action method="setWarrantyRender">
+                    <block>warranty/adminhtml_sales_order_create_warranty</block>
+                    <template>warranty/sales/order/create/warranty/child.phtml</template>
+                </action>
+            </block>
         </reference>
     </adminhtml_sales_order_create_index>
     <adminhtml_sales_order_create_load_block_items>
         <reference name="order_item_extra_info">
-            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-" template="warranty/sales/order/create/warranty.phtml"/>
+            <block type="warranty/adminhtml_sales_order_create_warranty" name="extend.warranty.init" after="-"
+                   template="warranty/sales/order/create/warranty.phtml">
+                <action method="setWarrantyRender">
+                    <block>warranty/adminhtml_sales_order_create_warranty</block>
+                    <template>warranty/sales/order/create/warranty/child.phtml</template>
+                </action>
+            </block>
         </reference>
         <reference name="items_grid">
             <action method="setTemplate" ifconfig="warranty/enableExtend/enable">
@@ -81,10 +93,24 @@
             <action method="addCss" ifconfig="warranty/enableExtend/enableRefunds">
                 <name>lib/prototype/windows/themes/magento.css</name>
             </action>
+            <action method="addItem" ifconfig="warranty/enableExtend/enable">
+                <type>skin_js</type>
+                <script>js/warranty/load-extend-sdk-client.js</script>
+            </action>
+        </reference>
+        <reference name="order_item_extra_info">
+            <block type="warranty/adminhtml_sales_items_lead" name="warranty_extra_html"
+                   template="warranty/sales/items/runlead.phtml" before="-"/>
         </reference>
         <reference name="order_items">
             <action method="addColumnRender" ifconfig="warranty/enableExtend/enable">
                 <column>name</column>
+                <block>warranty/adminhtml_sales_items_column_name</block>
+                <template>warranty/sales/items/column/name.phtml</template>
+                <type>warranty</type>
+            </action>
+            <action method="addColumnRender" ifconfig="warranty/enableExtend/enable">
+                <column>warranty</column>
                 <block>warranty/adminhtml_sales_items_column_name</block>
                 <template>warranty/sales/items/column/name.phtml</template>
             </action>

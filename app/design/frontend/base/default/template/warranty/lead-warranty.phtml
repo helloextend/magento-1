@@ -1,0 +1,40 @@
+<?php
+/** @var \Extend_Warranty_Helper_Connector $helper */
+$helper = Mage::helper('warranty/connector');
+$leadToken = $this->escapeHtml($this->getLeadTokenFromUrl());
+?>
+<?php if ($helper->isExtendEnabled() && $helper->isOffersLeadModalEnabled() && $leadToken): ?>
+    <script>
+        Extend.config(<?php echo $helper->getJsonConfig()?>);
+    </script>
+    <script>
+        addLeadWarrantyToCart = function (warranty) {
+            $j.post("<?php echo $this->getUrl('warranty/cart/leadAdd') ?>", {
+                warranty: warranty,
+                form_key: "<?= Mage::getSingleton('core/session')->getFormKey();?>",
+            }).done(function (data) {
+                location.replace('/');
+            });
+        }
+        $j(document).ready(function () {
+            Extend.aftermarketModal.open({
+                leadToken: "<?php echo $leadToken;?>",
+                onClose: function (plan, product, qty) {
+                    if (plan && product) {
+                        addLeadWarrantyToCart({
+                            leadToken: "<?php echo $leadToken;?>",
+                            planId: plan.planId,
+                            price: plan.price,
+                            term: plan.term,
+                            product: product.id,
+                            qty: qty
+                            // formKey: $.mage.cookies.get('form_key')
+                        })
+                    }else{
+                        location.replace('/');
+                    }
+                }
+            });
+        });
+    </script>
+<?php endif; ?>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Extend_Warranty_Model_ProductSyncProcessor
+ *
  */
 class Extend_Warranty_Model_ProductSyncProcessor
 {

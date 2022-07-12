@@ -3,6 +3,7 @@
 class Extend_Warranty_Block_System_Config_Portallink extends Mage_Adminhtml_Block_System_Config_Form_Fieldset
 {
     /**
+     * Return element Html
      * @param Varien_Data_Form_Element_Abstract $element
      * @return string
      */

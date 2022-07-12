@@ -2,6 +2,10 @@
 
 class Extend_Warranty_Block_System_Config_Intro extends Mage_Adminhtml_Block_System_Config_Form_Fieldset
 {
+    /**
+     * @param Varien_Data_Form_Element_Abstract $element
+     * @return string
+     */
     public function render(Varien_Data_Form_Element_Abstract $element)
     {
         $html = $this->_getHeaderHtml($element);

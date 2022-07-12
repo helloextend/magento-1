@@ -7,7 +7,7 @@
             </action>
         </reference>
     </default>
-    <catalog_product_view>
+    <cms_index_index>
         <reference name="head">
             <block type="core/text" name="extend.sdk.client">
                 <action method="setText" ifconfig="warranty/enableExtend/enable">
@@ -17,8 +17,23 @@
                 </action>
             </block>
         </reference>
+        <reference name="content">
+            <block type="warranty/lead" name="extend.warranty.lead" after="-" template="warranty/lead-warranty.phtml"/>
+        </reference>
+    </cms_index_index>
+    <catalog_product_view>
+        <reference name="head">
+            <block type="core/text" name="extend.sdk.client">
+                <action method="setText" ifconfig="warranty/enableExtend/enable">
+                    <text>
+                        <![CDATA[<script src="https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js"></script>]]>
+                    </text>
+                </action>
+            </block>
+            <action method="addItem"  ifconfig="warranty/enableExtend/enable"><type>skin_js</type><name>js/warranty/bundle-warranties.js</name></action>
+        </reference>
         <reference name="product.info.extrahint">
-            <block type="warranty/init" name="extend.warranty.init" after="-" template="warranty/warranty.phtml" />
+            <block type="warranty/init" name="extend.warranty.init" after="-" template="warranty/warranty.phtml"/>
         </reference>
     </catalog_product_view>
     <checkout_cart_index>
@@ -32,8 +47,47 @@
             </block>
         </reference>
         <reference name="checkout.cart">
-            <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>warranty/checkout/cart/item/default.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>warranty/checkout/cart/item/default.phtml</template></action>
+            <action method="addItemRender">
+                <type>simple</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>warranty/checkout/cart/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>warranty/checkout/cart/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>bundle</type>
+                <block>bundle/checkout_cart_item_renderer</block>
+                <template>warranty/checkout/cart/item/default.phtml</template>
+            </action>
         </reference>
     </checkout_cart_index>
+    <sales_order_view>
+        <reference name="head">
+            <block type="core/text" name="extend.sdk.client">
+                <action method="setText" ifconfig="warranty/enableExtend/enable">
+                    <text>
+                        <![CDATA[<script src="https://sdk.helloextend.com/extend-sdk-client/v1/extend-sdk-client.min.js"></script>]]>
+                    </text>
+                </action>
+            </block>
+        </reference>
+        <block type="core/text_list" name="additional.product.info" translate="label">
+            <block type="warranty/sales_order_view_lead" name="warranty_lead"
+                   template="warranty/order/view/item.phtml"/>
+        </block>
+        <!--        <reference name="my.account.wrapper">-->
+        <!--            <block type="sales/order_view" name="sales.order.view">-->
+        <!--                <block type="sales/order_items" name="order_items" template="sales/order/items.phtml">-->
+        <!--                    <action method="addItemRender">-->
+        <!--                        <type>default</type>-->
+        <!--                        <block>sales/order_item_renderer_default</block>-->
+        <!--                        <template>sales/order/items/renderer/default.phtml</template>-->
+        <!--                    </action>-->
+        <!--                </block>-->
+        <!--            </block>-->
+        <!--        </reference>-->
+    </sales_order_view>
 </layout>

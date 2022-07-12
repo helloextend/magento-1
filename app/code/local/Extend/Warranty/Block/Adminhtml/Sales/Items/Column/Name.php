@@ -7,16 +7,23 @@ class Extend_Warranty_Block_Adminhtml_Sales_Items_Column_Name extends Mage_Admin
      * @param false $isPartial
      * @return string
      */
-    public function getDataInit($item, $isPartial = false)
+    public function getDataInit($item)
     {
-        $contractID = json_decode($item->getContractId()) === NULL ? json_encode([$item->getContractId()]) : $item->getContractId();
-        $_elements = count(json_decode($contractID, true));
+        $contractID = json_decode($item->getContractId()) === NULL ? [$item->getContractId()] : json_decode($item->getContractId(), true);
 
-        return '{"url": "' . $this->getUrl('adminhtml/contract/refund') .
-            '", "contractId": ' . $contractID .
-            ', "isPartial": "' . $isPartial . '"' .
-            ', "maxRefunds": "' . $_elements . '"' .
-            ', "itemId": "' . $item->getId() . '" }';
+        $_elements = count($contractID);
+
+        $isPartial = $this->canShowPartial($item);
+
+        $config = [
+            "url" => $this->getUrl('adminhtml/extend_order/refund'),
+            "contractId" => $contractID,
+            "isPartial" => $isPartial,
+            "validate" => !Mage::helper('warranty/connector')->isOrdersApiEnabled(),
+            "maxRefunds" => $_elements,
+            "itemId" => $item->getId()
+        ];
+        return json_encode($config);
     }
 
     /**
