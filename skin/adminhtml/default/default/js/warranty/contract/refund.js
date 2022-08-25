@@ -17,11 +17,14 @@ $j(document).ready(function () {
 
     function validate(url, contractId, itemId) {
         showLoader()
-        $j.get(url, {
+        let payload = {
             contractId: contractId,
             itemId: itemId,
             validation: true
-        }).done(function (data) {
+        }
+        $j.get(url,
+            payload
+        ).done(function (data) {
             if (data.amountValidated > 0) {
                 let popupModalHtml = getWindowContent('confirm', itemId);
                 if (
@@ -44,18 +47,29 @@ $j(document).ready(function () {
         let currentItemId = $j(this).data('current_item_id')
         let url = refundConfig[currentItemId].url;
         let contractId = refundConfig[currentItemId].contractId;
+
         let itemId = refundConfig[currentItemId].itemId;
-        let isPartial = String(refundConfig[currentItemId].isPartial);
+        let validationEnabled = refundConfig[currentItemId].validate;
+        let isPartial = refundConfig[currentItemId].isPartial;
+
         if (isPartial) {
-            let contractItem = '';
-            $j.each(contractId, function (index, value) {
-                contractItem += '<input type="checkbox" id="pl-contract' + index + '" name="pl-contract' + index + '" value="' + value + '">' +
-                    '<label for="pl-contract' + index + '">' + value + '</label><br>';
-            });
-            openRefundPopup('Refund confirmation', getWindowContent('validation', itemId));
-            $j("div#partial-contracts-list").append(contractItem);
-        } else {
+            let checkboxInputItem = '';
+            if (contractId) {
+                $j.each(contractId, function (index, value) {
+                    checkboxInputItem += '<input type="checkbox" id="pl-contract' + index + '" name="pl-contract' + index + '" value="' + value + '">' +
+                        '<label for="pl-contract' + index + '">' + value + '</label><br>';
+                });
+            }
+            if (validationEnabled) {
+                openRefundPopup('Refund confirmation', getWindowContent('validation', itemId));
+            } else {
+                openRefundPopup('Refund confirmation', getWindowContent('confirm_without_validation', itemId));
+            }
+            $j("div#partial-contracts-list").append(checkboxInputItem);
+        } else if (validationEnabled) {
             validate(url, contractId, itemId);
+        } else if (!validationEnabled) {
+            refund(url,contractId,itemId);
         }
     })
 
@@ -63,14 +77,25 @@ $j(document).ready(function () {
         let currentItemId = $j(this).data('current_item_id')
         let url = refundConfig[currentItemId].url;
         let contractId = refundConfig[currentItemId].contractId;
-        if (
+
+        if (refundConfig[currentItemId].validate &&
             typeof refundConfig[currentItemId].contractId === 'object'
             && Object.keys(refundConfig[currentItemId].contractId).length > 1
         ) {
             contractId = JSON.parse($j('#contract_id').val());
+        } else if (!refundConfig[currentItemId].validate) {
+            let selectedRefundsArr = [];
+            $j.each($j("#refund_window input[name^='pl-contract']:checked"), function () {
+                selectedRefundsArr.push($j(this).val());
+            });
+            contractId = Object.assign({}, selectedRefundsArr);
         }
-        let itemId = refundConfig[currentItemId].itemId;
-        refund(url, contractId, itemId);
+
+        if (contractId) {
+            let itemId = refundConfig[currentItemId].itemId;
+            refund(url, contractId, itemId);
+        }
+
         Windows.close('refund_window');
     });
 
@@ -152,6 +177,14 @@ $j(document).ready(function () {
         content['confirm'] += '<button type="button" class="scalable cancel" id="cancel-button"><span>Cancel</span></button>';
         content['confirm'] += '<button type="button" class="scalable save" data-current_item_id="' + itemId + '" id="ok-button"><span>Send Refund Request</span></button>'
         content['confirm'] += '</div>';
+
+        content['confirm_without_validation'] = '<p style="margin: 10px 0;"><strong>Are you sure you want to refund <span id="refund-amount-validation-text"></span>?</strong></p>';
+        content['confirm_without_validation'] += '<div id="partial-contracts-list" style="margin: 10px 0;"></div>';
+        content['confirm_without_validation'] += '<button type="button" class="scalable add" id="partial-select-all"><span>Select/Unselect All</span></button>';
+        content['confirm_without_validation'] += '<div class="buttons-set a-right" style="margin-top:30px">';
+        content['confirm_without_validation'] += '<button type="button" class="scalable cancel" id="cancel-button"><span>Cancel</span></button>';
+        content['confirm_without_validation'] += '<button type="button" class="scalable save" data-current_item_id="' + itemId + '" id="ok-button"><span>Send Refund Request</span></button>'
+        content['confirm_without_validation'] += '</div>';
 
         content['validation'] = '<p style="margin: 10px 0;"><strong>Select the Contract IDs to process</strong></p>';
         content['validation'] += '<div id="partial-contracts-list" style="margin: 10px 0;"></div>';

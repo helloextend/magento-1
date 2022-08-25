@@ -6,6 +6,9 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     const WARRANTY_ID = 'warranty_id';
     const ASSOCIATED_PRODUCT = 'associated_product';
     const TERM = 'warranty_term';
+    const LEAD_TOKEN = 'lead_token';
+    const DYNAMIC_SKU = 'bundle_sku';
+    const RELATED_ITEM_ID = 'related_item_id';
     const BUY_REQUEST = 'info_buyRequest';
     const TYPE_AFFILIATE = 'affilated';
     const XML_PATH_AUTHENTICATION = 'catalog/affilated/authentication';
@@ -60,6 +63,18 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
             $options[self::TERM] = $term->getValue();
         }
 
+        if ($leadToken = $product->getCustomOption(self::LEAD_TOKEN)) {
+            $options[self::LEAD_TOKEN] = $leadToken->getValue();
+        }
+
+        if ($dynamicSku = $product->getCustomOption(self::DYNAMIC_SKU)) {
+            $options[self::DYNAMIC_SKU] = $dynamicSku->getValue();
+        }
+
+        if ($relatedItemId = $product->getCustomOption(self::RELATED_ITEM_ID)) {
+            $options[self::RELATED_ITEM_ID] = $relatedItemId->getValue();
+        }
+
         return $options;
     }
 
@@ -71,7 +86,7 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
     {
         $warrantyProperties = [
             self::ASSOCIATED_PRODUCT => 'Product',
-            self::TERM               => 'Term'
+            self::TERM => 'Term'
         ];
 
         $options = [];
@@ -110,6 +125,18 @@ class Extend_Warranty_Model_Product_Type extends Mage_Catalog_Model_Product_Type
         $product->addCustomOption(self::WARRANTY_ID, $buyRequest->getData('planId'));
         $product->addCustomOption(self::ASSOCIATED_PRODUCT, $buyRequest->getProduct());
         $product->addCustomOption(self::TERM, $buyRequest->getTerm());
+
+        if ($buyRequest->hasDynamicSku()) {
+            $product->addCustomOption(self::DYNAMIC_SKU, $buyRequest->getDynamicSku());
+        }
+
+        if ($buyRequest->hasRelatedItemId()) {
+            $product->addCustomOption(self::RELATED_ITEM_ID, $buyRequest->getRelatedItemId());
+        }
+
+        if ($buyRequest->getData('leadToken')) {
+            $product->addCustomOption(self::LEAD_TOKEN, $buyRequest->getData('leadToken'));
+        }
         $product->addCustomOption(self::BUY_REQUEST, serialize($buyRequest->getData()));
 
         if ($this->_isStrictProcessMode($processMode)) {

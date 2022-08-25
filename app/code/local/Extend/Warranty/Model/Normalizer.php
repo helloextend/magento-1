@@ -16,6 +16,11 @@ class Extend_Warranty_Model_Normalizer
         foreach ($items as $item) {
             if ($item->getProductType() === Extend_Warranty_Model_Product_Type::TYPE_CODE) {
                 $warranties[$item->getItemId()] = $item;
+            } else if ($item->getProductType() == 'bundle') {
+                $products[] = $item;
+                foreach ($item->getChildren() as $bundleChild) {
+                    $products[] = $bundleChild;
+                }
             } else {
                 $products[] = $item;
             }
@@ -24,23 +29,23 @@ class Extend_Warranty_Model_Normalizer
 
         //Loop products to see if their qty is different from the warranty qty and adjust both to max
         foreach ($products as $item) {
-            $itemQty = $item->getQty();
-            $warratiesQty = 0;
+            $itemQty = $item->getTotalQty();
+            $warrantiesQty = 0;
             $productWarranties = [];
 
             foreach ($warranties as $warrantyitem) {
                 if ($this->isWarrantyQuoteItemMatch($warrantyitem, $item)) {
-                    $warratiesQty += $warrantyitem->getQty();
+                    $warrantiesQty += $warrantyitem->getQty();
                     $productWarranties[$warrantyitem->getId()] = $warrantyitem;
                 }
             }
 
             $this->sortWarrantiesItems($productWarranties);
 
-            $warrantyQtyDelta = $itemQty - $warratiesQty;
-            if ($itemQty > $warratiesQty) {
+            $warrantyQtyDelta = $itemQty - $warrantiesQty;
+            if ($itemQty > $warrantiesQty) {
                 foreach ($productWarranties as $warrantyitem) {
-                    if ($itemQty > $warratiesQty) {
+                    if ($itemQty > $warrantiesQty) {
                         //Update Warranty QTY
                         $warrantyitem->setQty($warrantyitem->getQty() + $warrantyQtyDelta);
                         break;
@@ -88,7 +93,26 @@ class Extend_Warranty_Model_Normalizer
      */
     private function isWarrantyQuoteItemMatch($warranty, $quoteItem)
     {
-        return $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue() === $quoteItem->getSku()
-            && ($quoteItem->getProductType() == 'configurable' || is_null($quoteItem->getOptionByCode('parent_product_id')));
+        $associatedSku = [$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::ASSOCIATED_PRODUCT)->getValue()];
+
+        if ($warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)) {
+            // case when product is bundle with dynamic sku
+            $associatedSku[] = $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)->getValue();
+        }
+
+        $warrantyHelper = Mage::helper('warranty');
+
+        if ($warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::RELATED_ITEM_ID)) {
+            $warrantRelatedId = $warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::RELATED_ITEM_ID)->getValue();
+            $bundleCheck = in_array($warrantRelatedId, array($quoteItem->getParentItemId(), $quoteItem->getId()));
+        } else {
+            $bundleCheck = true;
+        }
+
+        return
+            in_array($warrantyHelper->getComplexQuoteItemSku($quoteItem), $associatedSku)
+            && ($quoteItem->getProductType() == 'configurable' || is_null($quoteItem->getOptionByCode('parent_product_id')))
+            && $bundleCheck
+            && !$warranty->getOptionByCode(Extend_Warranty_Model_Product_Type::LEAD_TOKEN);
     }
 }
