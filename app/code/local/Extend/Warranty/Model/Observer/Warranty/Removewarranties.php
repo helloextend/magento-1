@@ -21,10 +21,16 @@ class Extend_Warranty_Model_Observer_Warranty_Removewarranties
 
             $removeWarranty = true;
             foreach ($items as $item) {
+
+                if ($item->getProductType() !== Extend_Warranty_Model_Product_Type::TYPE_CODE) {
+                    continue;
+                }
+
                 if ($warrantyHelper->getComplexQuoteItemSku($item) === $removeComplexSku) {
                     $removeWarranty = false;
                     break;
                 }
+
                 if ($item->getSku() === $sku) {
                     $removeWarranty = false;
                     break;
@@ -41,6 +47,13 @@ class Extend_Warranty_Model_Observer_Warranty_Removewarranties
 
                     if ($item->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)) {
                         $associatedSku[] = $item->getOptionByCode(Extend_Warranty_Model_Product_Type::DYNAMIC_SKU)->getValue();
+                    }
+
+                    if ($item->getOptionByCode(Extend_Warranty_Model_Product_Type::RELATED_ITEM_ID)) {
+                        $relatedItemId = $item->getOptionByCode(Extend_Warranty_Model_Product_Type::RELATED_ITEM_ID)->getValue();
+                        if ($removeQuoteItem->getId() == $relatedItemId) {
+                            $quote->removeItem($item->getItemId());
+                        }
                     }
 
                     if (in_array($removeComplexSku, $associatedSku)) {

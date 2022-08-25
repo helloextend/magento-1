@@ -22,4 +22,20 @@ class Extend_Warranty_Block_Init extends Mage_Catalog_Block_Product_View
 
         return '';
     }
+
+    public function getBundleConfig()
+    {
+        $product = $this->getProduct();
+        if ($product->getTypeId() != 'bundle') {
+            return '';
+        }
+
+        $jsonConfig = [];
+        $optionsIds = $product->getTypeInstance()->getOptionsIds();
+        $selections = $product->getTypeInstance()->getSelectionsCollection($optionsIds);
+        foreach ($selections as $selection) {
+            $jsonConfig[$selection->getSelectionId()] = $selection->getSku();
+        }
+        return json_encode($jsonConfig);
+    }
 }

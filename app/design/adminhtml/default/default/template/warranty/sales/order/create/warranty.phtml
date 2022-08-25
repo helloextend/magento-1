@@ -1,50 +1,58 @@
 <?php
 $_item = $this->getItem();
-$_product = $_item->getProduct();
-$helper = Mage::helper('warranty/connector');
-/** @var Extend_Warranty_Helper_Data $warrantyHelper */
-$warrantyHelper = Mage::helper('warranty');
 ?>
-<?php if ($_product->getTypeId() !== 'warranty'): ?>
+<?php if ($_item && $_item->getProductType() !== 'warranty'): ?>
+    <?php
+        $_product = $_item->getProduct();
+        $helper = Mage::helper('warranty/connector');
+        /** @var Extend_Warranty_Helper_Data $warrantyHelper */
+        $warrantyHelper = Mage::helper('warranty');
+    ?>
     <?php if ($helper->isDisplayOffersEnabled()): ?>
-        <?php if (!$helper->productHasWarranty($_product, true)): ?>
-            <tbody id="warranty-<?= $_item->getId() ?>">
-            <tr>
-                <td colspan="7">
+        <tbody id="warranty-<?= $_item->getId() ?>">
+        <tr>
+            <td colspan="2">
+                <?php if (!$helper->productHasWarranty($_product, true)): ?>
                     <div id="extend-offer-<?= $_item->getId() ?>"></div>
-                </td>
-            </tr>
-            <script type="text/javascript">
-                var $j = jQuery.noConflict();
-                Extend.config(<?php echo $helper->getJsonConfig()?>);
-                    Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
-                        referenceId: '<?= $_product->getData('sku') ?>',
-                        onAddToCart: function (opts) {
-                            const plan = opts.plan;
-                            if (plan) {
-                                let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
-                                let url      = "<?= $this->getUrl('adminhtml/warranty/add') ?>";
-                                plan.product = '<?= $_product->getData('sku') ?>';
+                    <script type="text/javascript">
+                        var $j = jQuery.noConflict();
+                        Extend.config(<?php echo $helper->getJsonConfig()?>);
+                        Extend.buttons.renderSimpleOffer('#extend-offer-<?= $_item->getId() ?>', {
+                            referenceId: '<?= $_product->getData('sku') ?>',
+                            onAddToCart: function (opts) {
+                                const plan = opts.plan;
+                                if (plan) {
+                                    let parentId = "<?= $_item->getOptionByCode('simple_product') ? $_item->getProductId() : '' ?>";
+                                    let url = "<?= $this->getUrl('adminhtml/warranty/add') ?>";
+                                    plan.product = '<?= $_product->getData('sku') ?>';
+                                    plan.qty = <?= $_item->getQty() ?>;
 
-                                <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>
+                                    <?php if($_item->getProduct()->getTypeId() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE):?>
                                     plan.dynamic_sku = "<?= $warrantyHelper->getComplexProductSku($_product);?>";
-                                <?php endif;?>
+                                    <?php endif;?>
 
-                                $j.get(url, {
-                                    warranty: plan,
-                                    option: parentId,
-                                }).done(function (data) {
-                                    if (data.status == "success") {
-                                        order.productGridAddSelected('{products:{"<?php echo $_item->getId() ?>":1}}')
-                                    } else {
-                                        console.log("Oops! There was an error adding the protection plan.");
-                                    }
-                                });
+                                    $j.get(url, {
+                                        warranty: plan,
+                                        option: parentId,
+                                    }).done(function (data) {
+                                        if (data.status == "success") {
+                                            order.productGridAddSelected('{products:{"<?php echo $_item->getId() ?>":1}}')
+                                        } else {
+                                            console.log("Oops! There was an error adding the protection plan.");
+                                        }
+                                    });
+                                }
                             }
-                        }
-                    });
-            </script>
-            </tbody>
-        <?php endif; ?>
+                        });
+                    </script>
+                <?php endif; ?>
+                <dl class="warranty-childrens">
+                    <?= $this->renderChildItems($_item); ?>
+                </dl>
+            </td>
+
+            <td colspan=6></td>
+        </tr>
+        </tbody>
     <?php endif; ?>
 <?php endif; ?>
