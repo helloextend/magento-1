@@ -40,25 +40,3 @@ Extend provides an easy way for any merchant to offer extended protection plans,
 
 ## Language
 - The Extend module is only available in the English Language at this time
-
-# Installation
-
-## Install via SSH
-1. Download and unzip package from Magento’s marketplace
-2. Using SSH or sFTP move folders /app/code and /lib to Magento’s root folder
-3. Using a shell on Magento’s root folder, the following commands must be executed: 
-```zsh
-$ php bin/magento module:enable Extend_Warranty
-$ php bin/magento setup:upgrade
-$ php bin/magento cache:clean
-```
-
-## Install via Composer
-To install/update the extension with Composer, the following commands must be executed:
-```zsh
-$ composer config repositories.extend git https://github.com/helloextend/magento-1/
-$ composer require extend/module-warranty:dev-master
-$ php bin/magento setup:upgrade
-```
-
-Please contact your Merchant Services Manager for the M1 extension user guide or if you have any additional questions.
