@@ -2,6 +2,8 @@
 
 class Extend_Warranty_Model_Api_Databuilder_Product
 {
+    const MAX_DESCRIPTION_LENGTH = 2000;
+
     /**
      * @param $productSubject
      * @return array
@@ -9,6 +11,12 @@ class Extend_Warranty_Model_Api_Databuilder_Product
     public function build($productSubject)
     {
         $description = !empty($productSubject->getShortDescription()) ? (string)$productSubject->getShortDescription() : 'No description';
+        $description = substr(
+            $description,
+            0,
+            self::MAX_DESCRIPTION_LENGTH
+        );
+
         try {
             $imgUrl = $productSubject->getImageUrl();
         } catch (Exception $e) {
