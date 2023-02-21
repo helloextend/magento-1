@@ -1,9 +1,0 @@
-<?php
-/** @var Extend_Warranty_Block_Installation $this */
-?>
-<script type="text/javascript">
-    <?php $integrationConfig = $this->getIntegrationJsonConfig(); ?>
-    <?php if ($integrationConfig && !empty($integrationConfig)): ?>
-    window.Extend.integration = <?= /* @noEscape */ $integrationConfig ?>
-    <?php endif; ?>
-</script>
