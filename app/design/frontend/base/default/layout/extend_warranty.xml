@@ -19,8 +19,8 @@
         </reference>
         <reference name="content">
             <block type="warranty/lead" name="extend.warranty.lead" after="-" template="warranty/lead-warranty.phtml"/>
+            <block type="warranty/installation" name="warranty_extend_intallation" template="warranty/installation.phtml"/>
         </reference>
-        <update handle="extend_warranty_installation"/>
     </cms_index_index>
 
     <catalog_product_view>
