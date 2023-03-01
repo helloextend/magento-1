@@ -264,9 +264,19 @@ class Extend_Warranty_Helper_Connector extends Mage_Core_Helper_Abstract
             'environment' => $this->isLiveMode() ? self::LIVE : self::DEMO,
         ];
 
+        if($this->isAdmin()){
+            $data['region'] = 'US';
+        }
+
         return json_encode($data);
     }
 
+    /**
+     * @return boolean
+     */
+    protected function isAdmin(){
+        return Mage::getSingleton('admin/session')->isLoggedIn();
+    }
     /**
      * @param $sku
      * @param false $fromAdmin
