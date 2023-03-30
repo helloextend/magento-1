@@ -208,7 +208,7 @@
                 <batch_size>100</batch_size>
             </products>
             <historical_orders>
-                <cron_sync_enabled>1</cron_sync_enabled>
+                <cron_sync_enabled>0</cron_sync_enabled>
                 <batch_size>5</batch_size>
             </historical_orders>
         </warranty>
